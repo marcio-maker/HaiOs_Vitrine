@@ -520,7 +520,7 @@ var cortesData = [
       'https://i.pinimg.com/736x/45/84/d0/4584d0c441b4c7059f4dd1fd6e02046c.jpg'
     ]
   ],
-  ['brazilian-beach-wave-lob', 'corte', 'Brazilian Beach Wave Lob', 'Long Bob com Ondas Tropicais',
+  ['brazilian-beach-wave-bob', 'corte', 'Brazilian Beach Wave Bob', 'Long Bob com Ondas Tropicais',
     'Long bob com ondas largas, movimento tropical e textura desestruturada. Inspirado nas praias brasileiras.',
     'https://i.pinimg.com/1200x/18/58/1f/18581fff007bf6dae432d4d9ed75f6ad.jpg',
     [
@@ -553,7 +553,7 @@ var cortesData = [
     ]
   ],
   // ===== NOVOS CORTES — 1ª LEVA (5) =====
-  ['lob-desfiado', 'corte', 'Lob Desfiado', 'Long Bob com Textura',
+  ['bob-desfiado', 'corte', 'Bob Desfiado', 'Long Bob com Textura',
     'Long bob com pontas desfiadas e camadas leves. Cria movimento natural e remove o peso excessivo, ideal para cabelos médios que buscam leveza.',
     'https://i.pinimg.com/736x/8e/c2/dd/8ec2dda6ef4765196da9032189869f96.jpg',
     [
@@ -601,7 +601,7 @@ var cortesData = [
       'https://i.pinimg.com/736x/98/6f/3b/986f3b7f6ece364be7d82c4748a47d19.jpg'
     ]
   ],
-  ['wavy-lob', 'corte', 'Wavy Lob', 'Long Bob Ondulado',
+  ['wavy-Bob', 'corte', 'Wavy Bob', 'Long Bob Ondulado',
     'Long bob com ondas naturais e camadas suaves. Perfeito para cabelos ondulados que buscam um visual elegante e despretensioso.',
     'https://i.pinimg.com/1200x/18/58/1f/18581fff007bf6dae432d4d9ed75f6ad.jpg',
     [
