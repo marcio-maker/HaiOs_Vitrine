@@ -1,0 +1,1673 @@
+v<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>HairOS · Assistente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0808; --surface: #12100e; --surface2: #1a1612;
+            --gold: #c9a96e; --gold-dim: rgba(201, 169, 110, 0.15); --gold-light: #e8d5a8; --gold-glow: rgba(201, 169, 110, .12);
+            --text: #f0ebe4; --text-sec: #d4c9bc; --muted: #8a8278;
+            --border: rgba(201, 169, 110, 0.08); --border-soft: rgba(255, 255, 255, 0.04); --border-gold: rgba(201, 169, 110, 0.25);
+            --user: #1a1612; --bot: #12100e; --green: #3d9a6a;
+            --radius: 16px; --ease-luxury: cubic-bezier(.23, 1, .32, 1);
+            --focus-ring: 0 0 0 3px rgba(201, 169, 110, 0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+            height: 100dvh; overflow: hidden; -webkit-font-smoothing: antialiased;
+        }
+
+        /* Loading */
+        @keyframes logoZoomIn { 0% { opacity: 0; transform: scale(0.1); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes logoZoomOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(8); opacity: 0; } }
+        .loading-screen {
+            position: fixed; inset: 0; z-index: 99999; background: var(--bg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loading-logo {
+            font-family: 'Playfair Display', serif; font-size: 3.2rem; font-weight: 700; font-style: italic;
+            color: var(--text); letter-spacing: -0.02em; display: flex; align-items: center; gap: 4px;
+            animation: logoZoomIn 4.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; will-change: transform, opacity;
+        }
+        .loading-logo.zoom-out { animation: logoZoomOut 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards; }
+        .loading-logo span { color: var(--gold); text-shadow: 0 0 60px var(--gold-glow); }
+        .loading-logo .dot { color: var(--gold); font-size: 3rem; }
+        .loading-bar { margin-top: 28px; width: min(210px, 64vw); height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; transition: opacity 0.6s ease; }
+        .loading-bar-inner { width: 0%; height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 2px; transition: width 0.1s linear; }
+        .loading-text { margin-top: 16px; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.4; transition: opacity 0.6s ease; }
+        .loading-percent { margin-top: 6px; font-size: 0.65rem; color: var(--gold); font-weight: 400; opacity: 0.6; transition: opacity 0.6s ease; }
+
+        /* App / Header */
+        .app-container { display: flex; flex-direction: column; height: 100dvh; width: 100vw; max-width: 820px; margin: 0 auto; background: var(--bg); }
+        .header {
+            flex-shrink: 0; padding: 12px 16px; background: rgba(18, 14, 12, 0.82);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border-gold);
+            display: flex; align-items: center; gap: 12px; position: relative;
+        }
+        .header::after { content: ''; position: absolute; bottom: -1px; left: 16px; width: 60px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); pointer-events: none; }
+        .header-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #8b6914); display: flex; align-items: center; justify-content: center; font-size: 17px; font-family: 'Playfair Display', serif; font-style: italic; color: #0a0808; font-weight: 700; flex-shrink: 0; box-shadow: 0 4px 16px rgba(201, 169, 110, 0.25); border: 1px solid rgba(232, 213, 168, 0.35); }
+        .header-info h1 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: 0.01em; }
+        .header-info p { font-size: 10px; color: var(--muted); font-weight: 300; letter-spacing: 0.08em; opacity: 0.6; text-transform: uppercase; }
+        .header-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .header-link {
+            font-size: 9px; color: var(--gold); text-decoration: none; padding: 5px 12px;
+            border: 1px solid rgba(201, 169, 110, 0.25); border-radius: 100px; white-space: nowrap;
+            transition: all 0.25s var(--ease-luxury); font-family: 'Inter', sans-serif; cursor: pointer;
+            display: flex; align-items: center; gap: 5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+        }
+        .header-link:hover, .header-link:focus-visible { background: var(--gold-dim); border-color: var(--gold); outline: none; box-shadow: 0 0 14px rgba(201, 169, 110, 0.25); }
+        .header-link svg { width: 11px; height: 11px; fill: var(--gold); flex-shrink: 0; }
+        .header-status { font-size: 9px; color: var(--green); display: flex; align-items: center; gap: 5px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+        .header-status::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 8px rgba(61, 154, 106, 0.6); }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+        /* Chat */
+        .chat { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+        .chat::-webkit-scrollbar { width: 3px; }
+        .chat::-webkit-scrollbar-track { background: transparent; }
+        .chat::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 10px; }
+        .chat::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+        .msg { max-width: 88%; padding: 11px 15px; border-radius: var(--radius); font-size: 13px; line-height: 1.55; animation: fadeIn .35s var(--ease-luxury); font-weight: 300; }
+        .msg.bot:has(.result-card), .msg.bot:has(.consultoria-block) { max-width: 94%; padding: 8px 10px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .msg.bot { align-self: flex-start; background: var(--bot); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+        .msg.user { align-self: flex-end; background: var(--user); border: 1px solid var(--border-gold); border-bottom-right-radius: 4px; }
+        .msg strong { color: var(--gold); font-weight: 600; }
+        .user-photo { max-width: 150px; border-radius: 12px; border: 1px solid var(--gold); margin-top: 6px; display: block; cursor: pointer; transition: transform 0.2s; }
+        .user-photo:hover { transform: scale(1.02); }
+
+        /* Cards */
+        .result-card { margin-top: 10px; background: var(--surface2); border: 1px solid var(--border-gold); border-radius: 14px; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s; cursor: pointer; }
+        .result-card:hover { border-color: rgba(201, 169, 110, 0.45); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(201, 169, 110, 0.1); }
+        .result-hero { position: relative; width: 100%; aspect-ratio: 3 / 4; max-height: 220px; overflow: hidden; background: var(--surface); display: flex; align-items: center; justify-content: center; }
+        .result-hero img { width: 100%; height: 100%; object-fit: contain; object-position: center center; display: block; transition: transform 0.6s cubic-bezier(.25, .46, .45, .94); cursor: pointer; background: var(--surface2); }
+        .result-card:hover .result-hero img { transform: scale(1.04); }
+        .result-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10, 8, 8, 0) 45%, rgba(10, 8, 8, 0.30) 70%, rgba(10, 8, 8, 0.85) 100%); pointer-events: none; z-index: 1; }
+        .result-hero-info { position: absolute; bottom: 12px; left: 12px; right: 12px; z-index: 2; text-align: left; }
+        .result-hero-info .badge { display: inline-block; font-size: 8px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(8px); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(201, 169, 110, 0.25); margin-bottom: 5px; font-weight: 600; }
+        .result-hero-info h3 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.15; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5); margin: 0; }
+        .result-hero-info .subtitle { font-size: 0.65rem; color: var(--text-sec); opacity: 0.85; font-weight: 300; margin-top: 2px; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); }
+        .result-body { padding: 11px 13px; }
+        .result-body p { font-size: 11px; color: var(--muted); line-height: 1.55; font-weight: 300; margin-bottom: 10px; }
+        .result-actions { display: flex; flex-direction: column; gap: 6px; }
+        .result-actions a { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; font-size: 10px; font-weight: 600; border-radius: 10px; text-decoration: none; transition: all 0.25s var(--ease-luxury); font-family: 'Inter', sans-serif; width: 100%; letter-spacing: 0.06em; text-transform: uppercase; }
+        .result-actions a.btn-ml { background: var(--gold); color: #0a0808; border: none; }
+        .result-actions a.btn-ml:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(201, 169, 110, 0.25); }
+        .result-actions a.btn-vitrine { background: var(--surface2); border: 1px solid var(--gold); color: var(--gold); font-weight: 600; }
+        .result-actions a.btn-vitrine:hover { background: var(--gold); color: #0a0808; border-color: var(--gold); }
+
+        /* Consultoria */
+        .consultoria-block { margin-top: 4px; }
+        .consultoria-title { font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); font-size: 13px; margin: 14px 0 6px 0; letter-spacing: 0.01em; }
+        .consultoria-title:first-child { margin-top: 4px; }
+
+        /* Alternativas */
+        .alt-scroll { display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px 8px; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
+        .alt-scroll::-webkit-scrollbar { display: none; }
+        .alt-item { min-width: 72px; max-width: 82px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex-shrink: 0; scroll-snap-align: start; transition: border-color 0.25s, transform 0.25s; position: relative; display: block; cursor: pointer; text-decoration: none; }
+        .alt-item:hover { border-color: rgba(201, 169, 110, 0.4); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35); }
+        .alt-item-img { width: 100%; height: 62px; object-fit: cover; object-position: center center; display: block; background: var(--surface2); cursor: pointer; transition: transform 0.3s; }
+        .alt-item-img:hover { transform: scale(1.05); }
+        .alt-item span { display: block; font-size: 8.5px; color: var(--text-sec); font-weight: 500; padding: 4px 4px 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Playfair Display', serif; font-style: italic; pointer-events: none; }
+
+        /* Mini produto */
+        .mini-product { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px; margin-bottom: 6px; transition: border-color 0.25s, transform 0.2s; position: relative; text-decoration: none; cursor: pointer; }
+        .mini-product:hover { border-color: rgba(201, 169, 110, 0.3); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); }
+        .mini-product-row { display: flex; align-items: center; gap: 8px; }
+        .mini-product-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; object-position: center center; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; transition: transform 0.3s; }
+        .mini-product-img:hover { transform: scale(1.08); }
+        .mini-product-info { flex: 1; }
+        .mini-product-info h4 { font-size: 10.5px; color: var(--text); font-weight: 600; margin-bottom: 1px; font-family: 'Inter', sans-serif; }
+        .mini-product-info p { font-size: 9px; color: var(--muted); margin: 0; line-height: 1.35; font-weight: 300; }
+        .mini-product-actions { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+        .mini-product-actions a { font-size: 9px; padding: 4px 12px; border-radius: 16px; text-decoration: none; font-weight: 600; transition: all 0.25s; font-family: 'Inter', sans-serif; letter-spacing: 0.04em; text-align: center; flex: 1; min-width: 70px; text-transform: uppercase; }
+        .mini-product-actions a.btn-ml-mini { background: var(--gold); color: #0a0808; border: none; }
+        .mini-product-actions a.btn-ml-mini:hover { background: var(--gold-light); transform: translateY(-1px); }
+        .mini-product-actions a.btn-vitrine-mini { background: var(--surface2); border: 1px solid var(--gold); color: var(--gold); }
+        .mini-product-actions a.btn-vitrine-mini:hover { background: var(--gold); color: #0a0808; }
+
+        .refazer-link { display: block; text-align: center; margin-top: 14px; color: var(--gold); font-size: 10px; text-decoration: underline; cursor: pointer; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; transition: opacity 0.2s; }
+        .refazer-link:hover { opacity: 1; text-shadow: 0 0 10px rgba(201, 169, 110, 0.5); }
+
+        /* Composer / Quick / Options */
+        .quick { flex-shrink: 0; padding: 8px 12px 6px; display: flex; gap: 6px; overflow-x: auto; border-top: 1px solid var(--border); background: var(--surface); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .quick::-webkit-scrollbar { display: none; }
+        .quick button { flex-shrink: 0; padding: 6px 13px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 100px; font-size: 10px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.25s var(--ease-luxury); font-family: 'Inter', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+        .quick button:active, .quick button:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); box-shadow: 0 0 14px rgba(201, 169, 110, 0.2); }
+        .options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .options button { text-align: left; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 10px; font-size: 12px; font-weight: 400; cursor: pointer; transition: all 0.25s var(--ease-luxury); font-family: 'Inter', sans-serif; line-height: 1.4; }
+        .options button:active, .options button:hover { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); transform: translateX(2px); }
+        .options button:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border); background: transparent; color: var(--muted); }
+
+        .composer { flex-shrink: 0; padding: 8px 12px 12px; background: var(--surface); border-top: 1px solid var(--border); display: flex; gap: 6px; align-items: flex-end; }
+        .icon-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface2); color: var(--gold); font-size: 14px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.25s var(--ease-luxury); }
+        .icon-btn:hover, .icon-btn:focus-visible { border-color: var(--gold); background: var(--gold-dim); box-shadow: 0 0 14px rgba(201, 169, 110, 0.25); outline: none; }
+        .icon-btn:active { background: var(--gold-dim); transform: scale(0.95); }
+        .composer textarea { flex: 1; resize: none; background: var(--surface2); border: 1px solid var(--border); border-radius: 18px; padding: 7px 14px; color: var(--text); font-size: 12.5px; font-family: 'Inter', sans-serif; font-weight: 300; max-height: 70px; outline: none; transition: border 0.25s, box-shadow 0.25s; line-height: 1.4; }
+        .composer textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12); }
+        .composer textarea::placeholder { color: var(--muted); opacity: 0.45; }
+        .composer button.send { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--gold); color: #0a0808; font-size: 15px; font-weight: 700; cursor: pointer; flex-shrink: 0; transition: all 0.25s var(--ease-luxury); }
+        .composer button.send:hover { background: var(--gold-light); transform: scale(1.04); box-shadow: 0 0 18px rgba(201, 169, 110, 0.4); }
+        .composer button.send:active { transform: scale(0.95); }
+
+        /* Typing */
+        .typing-indicator { display: inline-flex; gap: 4px; padding: 4px 0; }
+        .typing-indicator span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); opacity: 0.5; animation: typingBounce 1.4s ease-in-out infinite; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.3; } 30% { transform: translateY(-6px); opacity: 1; } }
+
+        /* Zoom / Image modal */
+        .image-modal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 20px; cursor: zoom-out; }
+        .image-modal.active { display: flex; }
+        .image-modal img { max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: 12px; border: 1px solid var(--border-gold); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8); cursor: default; }
+        .image-modal .close-modal { position: absolute; top: 20px; right: 24px; color: var(--text); font-size: 32px; cursor: pointer; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .image-modal .close-modal:hover { background: var(--gold-dim); border-color: var(--gold); }
+        .image-modal .modal-actions { position: absolute; bottom: 40px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        .image-modal .modal-actions a { padding: 8px 24px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: all 0.25s; font-family: 'Inter', sans-serif; letter-spacing: 0.03em; }
+        .image-modal .modal-actions .btn-vitrine-modal { background: var(--surface2); border: 1px solid var(--gold); color: var(--gold); }
+        .image-modal .modal-actions .btn-vitrine-modal:hover { background: var(--gold); color: #0a0808; }
+        .image-modal .modal-actions .btn-ml-modal { background: var(--gold); color: #0a0808; border: none; }
+        .image-modal .modal-actions .btn-ml-modal:hover { background: var(--gold-light); transform: translateY(-1px); }
+        .image-modal .modal-title { position: absolute; top: 80px; color: var(--gold); font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; text-align: center; max-width: 80%; }
+
+        /* Comparador */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+        .compare-grid .result-card { margin-top: 0; }
+        .compare-grid .result-hero { max-height: 140px; }
+
+        @media (max-width: 480px) {
+            .header-info h1 { font-size: 13px; }
+            .header-info p { font-size: 9px; }
+            .msg { font-size: 12px; padding: 9px 13px; }
+            .quick button { font-size: 9px; padding: 5px 11px; }
+            .composer textarea { font-size: 12px; padding: 6px 12px; }
+            .result-hero { max-height: 160px; }
+            .image-modal .modal-title { font-size: 0.9rem; top: 70px; }
+            .image-modal .modal-actions a { font-size: 0.7rem; padding: 6px 16px; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .loading-logo { font-size: 2.6rem; }
+            .loading-logo .dot { font-size: 2.4rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo" id="loadingLogo">Hair<span>OS</span><span class="dot">.</span></div>
+        <div class="loading-bar" id="loadingBarContainer">
+            <div class="loading-bar-inner" id="loadingBar"></div>
+        </div>
+        <div class="loading-text" id="loadingText">preparando sua conversa</div>
+        <div class="loading-percent" id="loadingPercent">0%</div>
+    </div>
+
+    <div class="image-modal" id="imageModal" onclick="closeModal()">
+        <button class="close-modal" onclick="closeModal()">✕</button>
+        <div class="modal-title" id="modalTitle"></div>
+        <img id="modalImg" src="" alt="">
+        <div class="modal-actions">
+            <a class="btn-vitrine-modal" id="modalVitrineLink" href="#" target="_blank">Ver na Vitrine</a>
+            <a class="btn-ml-modal" id="modalMlLink" href="#" target="_blank">Ver no Mercado Livre</a>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="header-avatar">H</div>
+            <div class="header-info">
+                <h1>HairOS Assistente</h1>
+                <p>recomendações personalizadas</p>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="header-link" aria-label="Voltar para a vitrine">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                    </svg>
+                    <span>Vitrine</span>
+                </a>
+                <div class="header-status">online</div>
+            </div>
+        </header>
+
+        <main class="chat" id="chat"></main>
+
+        <div class="quick" id="quick">
+            <button data-action="quiz-corte">Cortes</button>
+            <button data-action="quiz-cor">Cores</button>
+            <button data-action="quiz-produto">Produtos</button>
+            <button data-action="quiz-ferramentas">Ferramentas</button>
+            <button data-action="quiz-kit">Kits</button>
+            <button data-action="duvidas">Dúvidas</button>
+            <button data-action="diagnostico">Diagnóstico</button>
+        </div>
+
+        <div class="composer">
+            <input type="file" id="photoInput" accept="image/*" capture="environment" style="display: none;">
+            <button class="icon-btn" id="cameraBtn" aria-label="Enviar foto">📷</button>
+            <textarea id="input" rows="1" placeholder="Digite sua dúvida..."></textarea>
+            <button class="send" id="sendBtn" aria-label="Enviar">↑</button>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        // ============================================================
+        // HAIR·OS ASSISTENTE — CHAT COMPLETO (v3 · diagnóstico com foto)
+        // ============================================================
+
+        var VITRINE_URL = 'index.html';
+        var ML_SEARCH = 'https://www.mercadolivre.com.br/busca?word=';
+
+        var state = { mode: 'idle', quiz: null, step: 0, answers: [], analiseFoto: null };
+        var quizTimer = null;
+        var chatEl = document.getElementById('chat');
+        var inputEl = document.getElementById('input');
+        var photoInput = document.getElementById('photoInput');
+        var cameraBtn = document.getElementById('cameraBtn');
+
+        function escapeAttr(str) {
+            return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+        }
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function getItemName(item) {
+            if (!item) return '';
+            return item.corte || item.title || '';
+        }
+        function getItemSubtitle(item) {
+            if (!item) return '';
+            if (item.corte && item.title && item.corte !== item.title) return item.title;
+            return '';
+        }
+
+        function getMlLink(item) {
+            if (!item) return ML_SEARCH;
+            if (item.link) return item.link;
+
+            var haystack = (
+                (item.corte || '') + ' ' +
+                (item.title || '') + ' ' +
+                (item.desc || '') + ' ' +
+                (item.id || '') + ' ' +
+                (item.categoria || '')
+            ).toLowerCase();
+
+            function matchKits(source) {
+                if (!source || !source.kits || !source.kits.length) return null;
+                for (var i = 0; i < source.kits.length; i++) {
+                    var kit = source.kits[i];
+                    if (!kit || !kit.link) continue;
+                    var nome = (kit.nome || '').toLowerCase().replace(/^kit\s+/, '');
+                    var tokens = nome.split(/\s+/).filter(function (t) { return t.length > 2; });
+                    for (var t = 0; t < tokens.length; t++) {
+                        var tok = tokens[t];
+                        var tokPlain = tok.normalize ? tok.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : tok;
+                        var hayPlain = haystack.normalize ? haystack.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : haystack;
+                        if (haystack.indexOf(tok) !== -1 || hayPlain.indexOf(tokPlain) !== -1) {
+                            return kit.link;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            var link = null;
+            if (typeof cuidadosKits !== 'undefined') link = matchKits(cuidadosKits);
+            if (!link && typeof coloracaoKits !== 'undefined') link = matchKits(coloracaoKits);
+
+            if (!link) {
+                if (/kerastase|kérastase/.test(haystack)) link = 'https://meli.la/1MwSY7v';
+                else if (/joico/.test(haystack)) link = 'https://meli.la/2x9xqBe';
+                else if (/expert|l['']oréal|loreal|vitamino|absolut|metal.?detox/.test(haystack)) link = 'https://meli.la/2nmeunk';
+                else if (/keune/.test(haystack)) link = 'https://meli.la/1GbiW7M';
+                else if (/inoa|dia.?color|coloração técnica|coloracao tecnica/.test(haystack)) link = 'https://meli.la/28LpPj2';
+                else if (/ferramenta|secador|prancha|babyliss|escova|tesoura|navalha|máquina|maquina|difusor|pente|pincel|capa|massageador|luva|touca/.test(haystack)) link = 'https://meli.la/1GbiW7M';
+            }
+
+            if (link) return link;
+
+            var q = getItemName(item) || item.title || '';
+            return ML_SEARCH + encodeURIComponent(q);
+        }
+
+        function getVitrineLink(item) {
+            if (!item || !item.id) return VITRINE_URL;
+            return VITRINE_URL + '?estilo=' + encodeURIComponent(item.id);
+        }
+
+        function pickAlternatives(item, categoria, count) {
+            count = count || 3;
+            if (!item || !styleData) return [];
+            var keys = Object.keys(styleData).filter(function (k) {
+                return styleData[k] && styleData[k].categoria === categoria &&
+                    styleData[k].id !== item.id && !String(k).startsWith('user_');
+            });
+            for (var i = keys.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = keys[i]; keys[i] = keys[j]; keys[j] = t;
+            }
+            return keys.slice(0, count).map(function (k) { return styleData[k]; });
+        }
+
+        function buscarPorPalavra(palavra) {
+            var results = [];
+            if (!palavra || typeof styleData === 'undefined') return results;
+            var lower = palavra.toLowerCase();
+            Object.keys(styleData).forEach(function (k) {
+                var item = styleData[k];
+                if (String(k).startsWith('user_')) return;
+                var name = getItemName(item).toLowerCase();
+                var desc = (item.desc || '').toLowerCase();
+                var sub = (getItemSubtitle(item) || '').toLowerCase();
+                if (name.indexOf(lower) !== -1 || desc.indexOf(lower) !== -1 || sub.indexOf(lower) !== -1) {
+                    results.push(item);
+                }
+            });
+            return results;
+        }
+
+        // ============================================================
+        // MOTOR DE RECOMENDAÇÃO
+        // ============================================================
+        var MotorRecomendacao = {
+            poolsCorte: {
+                curto: ['pixie-cut', 'bixie-cut', 'french-bob', 'modern-mullet'],
+                medio: ['long-bob', 'italian-bob', 'blunt-cut', 'wolf-cut', 'shaggy-hair', 'clavicut', 'velvet-bob', 'curtain-bang'],
+                longo: ['butterfly-cut', 'hush-cut', 'octopus-cut', 'clavicut', 'soft-layers']
+            },
+            texturaCorte: {
+                'pixie-cut': ['liso', 'ondulado', 'cacheado'],
+                'bixie-cut': ['liso', 'ondulado'],
+                'french-bob': ['liso', 'ondulado'],
+                'modern-mullet': ['ondulado', 'cacheado', 'liso'],
+                'long-bob': ['liso', 'ondulado'],
+                'italian-bob': ['liso', 'ondulado'],
+                'blunt-cut': ['liso'],
+                'wolf-cut': ['ondulado', 'cacheado'],
+                'shaggy-hair': ['ondulado', 'cacheado', 'liso'],
+                'clavicut': ['liso', 'ondulado'],
+                'velvet-bob': ['liso', 'ondulado'],
+                'butterfly-cut': ['ondulado', 'cacheado', 'liso'],
+                'hush-cut': ['liso', 'ondulado'],
+                'octopus-cut': ['ondulado', 'cacheado'],
+                'curtain-bang': ['liso', 'ondulado', 'cacheado'],
+                'soft-layers': ['liso', 'ondulado', 'cacheado']
+            },
+            tempoBaixo: ['pixie-cut', 'bixie-cut', 'blunt-cut', 'clavicut', 'french-bob', 'long-bob', 'curtain-bang', 'soft-layers'],
+            tempoAlto: ['wolf-cut', 'shaggy-hair', 'octopus-cut', 'modern-mullet', 'butterfly-cut', 'hush-cut'],
+            estiloClassico: ['french-bob', 'blunt-cut', 'long-bob', 'clavicut', 'italian-bob'],
+            estiloModerno: ['pixie-cut', 'bixie-cut', 'velvet-bob', 'butterfly-cut', 'hush-cut', 'wolf-cut', 'curtain-bang', 'soft-layers'],
+            estiloAlternativo: ['modern-mullet', 'wolf-cut', 'shaggy-hair', 'octopus-cut', 'bixie-cut'],
+
+            resolverCorte: function (comp, tex, tempo, estilo) {
+                comp = comp || 'medio';
+                tex = tex || 'liso';
+                tempo = tempo || 'medio';
+                estilo = estilo || 'moderno';
+                var pool = (this.poolsCorte[comp] || this.poolsCorte.medio).slice();
+                var porTex = pool.filter(function (id) {
+                    var ok = MotorRecomendacao.texturaCorte[id];
+                    return ok && ok.indexOf(tex) !== -1;
+                });
+                if (porTex.length) pool = porTex;
+                if (tempo === 'baixo') {
+                    var tB = pool.filter(function (id) { return MotorRecomendacao.tempoBaixo.indexOf(id) !== -1; });
+                    if (tB.length) pool = tB;
+                } else if (tempo === 'alto') {
+                    var tA = pool.filter(function (id) { return MotorRecomendacao.tempoAlto.indexOf(id) !== -1; });
+                    if (tA.length) pool = tA;
+                }
+                var listaEstilo = estilo === 'classico' ? this.estiloClassico
+                    : estilo === 'alternativo' ? this.estiloAlternativo
+                        : this.estiloModerno;
+                var porEstilo = pool.filter(function (id) { return listaEstilo.indexOf(id) !== -1; });
+                if (porEstilo.length) pool = porEstilo;
+                if (!pool.length) {
+                    if (comp === 'curto') return 'pixie-cut';
+                    if (comp === 'longo') return 'butterfly-cut';
+                    return 'long-bob';
+                }
+                return pool[0];
+            },
+
+            resolverCor: function (base, manut, resultado) {
+                base = base || 'castanho';
+                manut = manut || 'media';
+                resultado = resultado || 'natural';
+                if (base === 'grisalho') {
+                    if (resultado === 'marcante') return 'grisalhos-quentes';
+                    return 'grisalhos-frios';
+                }
+                if (base === 'ruivo') {
+                    if (resultado === 'marcante') return 'cherry-cola';
+                    if (resultado === 'natural') return 'ruivo-doce-leite';
+                    return 'cowgirl-copper';
+                }
+                if (base === 'loiro') {
+                    if (resultado === 'natural') {
+                        return manut === 'baixa' ? 'californianas' : 'balayage-loira';
+                    }
+                    if (resultado === 'marcante') {
+                        return manut === 'alta' ? 'ombre-tiger-eye' : 'highlights-loira';
+                    }
+                    return manut === 'baixa' ? 'vanilla-blonde' : 'contour-highlights';
+                }
+                if (base === 'escuro') {
+                    if (resultado === 'marcante') return manut === 'alta' ? 'ombre-tiger-eye' : 'cherry-cola';
+                    if (resultado === 'uniforme' || resultado === 'sofisticado') return 'mocha-mousse';
+                    return manut === 'baixa' ? 'babylights-morena' : 'mechas-contour';
+                }
+                if (resultado === 'natural') {
+                    return manut === 'baixa' ? 'expensive-brunette' : 'babylights-morena';
+                }
+                if (resultado === 'marcante') {
+                    return manut === 'alta' ? 'ombre-tiger-eye' : 'contour-highlights';
+                }
+                return manut === 'baixa' ? 'mocha-mousse' : 'mechas-contour';
+            },
+
+            resolverProduto: function (queixa, colora, textura) {
+                queixa = queixa || 'seco';
+                colora = colora || 'nao';
+                textura = textura || 'liso';
+                if (queixa === 'cor' || (colora === 'sim' && queixa === 'seco')) return 'expert-vitamino-color';
+                if (queixa === 'cor') return 'joico-color-endure';
+                if (queixa === 'danificado') {
+                    return colora === 'sim' ? 'expert-absolut-repair-mask' : 'kerastase-resistance-mask';
+                }
+                if (queixa === 'cacho' || textura === 'cacheado') return 'joico-moisture-mask';
+                if (queixa === 'quebra') return 'joico-defy-damage';
+                if (queixa === 'opaco') return 'kerastase-chronologiste-oil';
+                if (queixa === 'calor') return 'kerastase-thermique';
+                if (queixa === 'metal' || queixa === 'pre_color') return 'expert-metal-detox';
+                if (queixa === 'seco') return 'joico-moisture-shampoo';
+                return 'kerastase-resistance-shampoo';
+            },
+
+            resolverFerramenta: function (necessidade, textura) {
+                necessidade = necessidade || 'secagem';
+                textura = textura || 'liso';
+
+                var mapa = {
+                    secagem: 'secador-ionico-pro',
+                    alisamento: 'prancha-titanium',
+                    ondas: 'modelador-ondas',
+                    cachos: textura === 'cacheado' ? 'difusor-universal' : 'babyliss-ceramica',
+                    volume: 'escova-rotativa',
+                    corte: 'tesoura-profissional',
+                    degrade: 'maquina-corte',
+                    desembaracar: 'escova-paddle',
+                    acabamento: 'escova-termica-alisadora',
+                    coloracao: 'escova-cerdas-naturais',
+                    protecao: 'touca-termica',
+                    relaxamento: 'massageador-capilar',
+                    antiestatico: 'escova-madeira',
+                    modelagem: 'escova-ceramica'
+                };
+
+                var escolhido = mapa[necessidade] || 'secador-ionico-pro';
+
+                if (typeof styleData !== 'undefined' && styleData) {
+                    if (!styleData[escolhido]) {
+                        var ferramentas = Object.keys(styleData).filter(function (k) {
+                            return styleData[k] && styleData[k].categoria === 'ferramentas';
+                        });
+                        if (ferramentas.length) return ferramentas[0];
+                        return 'secador-ionico-pro';
+                    }
+                }
+                return escolhido;
+            },
+
+            resolverKit: function (foco, queixa) {
+                foco = foco || 'premium';
+                queixa = queixa || 'geral';
+                if (foco === 'coloracao') {
+                    if (queixa === 'danificado') return 'kit-expert-absolut-repair';
+                    if (queixa === 'metal') return 'kit-expert-metal-detox';
+                    return 'kit-expert-vitamino-color';
+                }
+                if (foco === 'hidro') {
+                    if (queixa === 'intenso') return 'kit-joico-moisture-mask';
+                    return 'kit-joico-moisture';
+                }
+                if (foco === 'recon') {
+                    if (queixa === 'intenso') return 'kit-expert-absolut-repair-mask';
+                    return 'kit-expert-absolut-repair';
+                }
+                if (foco === 'volume') return 'kit-joico-Volumizing';
+                if (foco === 'protecao') return 'kit-joico-defy-damage';
+                if (foco === 'brilho') return 'kit-expert-serum';
+                if (foco === 'termico') return 'kit-kerastase-thermique';
+                if (queixa === 'hidro') return 'kit-kerastase-hydration';
+                if (queixa === 'regeneracao') return 'kit-kerastase-chronologiste';
+                return 'kit-kerastase-resistance';
+            }
+        };
+
+        // ============================================================
+        // ANALISADOR DE IMAGEM
+        // ============================================================
+        var AnalisadorImagem = {
+            extrairCoresDominantes: function (imgElement, numCores) {
+                numCores = numCores || 5;
+                try {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    var width = 150, height = 150;
+                    canvas.width = width;
+                    canvas.height = height;
+                    try { ctx.drawImage(imgElement, 0, 0, width, height); } catch (e) { return []; }
+                    var imageData;
+                    try { imageData = ctx.getImageData(0, 0, width, height); } catch (e) { return []; }
+                    var data = imageData.data;
+                    var colorMap = {};
+                    var step = 4;
+                    for (var y = 0; y < height; y += step) {
+                        for (var x = 0; x < width; x += step) {
+                            var idx = (y * width + x) * 4;
+                            if (data[idx + 3] < 128) continue;
+                            var r = Math.round(data[idx] / 16) * 16;
+                            var g = Math.round(data[idx + 1] / 16) * 16;
+                            var b = Math.round(data[idx + 2] / 16) * 16;
+                            var key = r + ',' + g + ',' + b;
+                            colorMap[key] = (colorMap[key] || 0) + 1;
+                        }
+                    }
+                    var sorted = Object.keys(colorMap).sort(function (a, b) { return colorMap[b] - colorMap[a]; });
+                    var result = [];
+                    for (var j = 0; j < Math.min(numCores, sorted.length); j++) {
+                        var parts = sorted[j].split(',').map(Number);
+                        result.push({ r: parts[0], g: parts[1], b: parts[2], freq: colorMap[sorted[j]] });
+                    }
+                    return result;
+                } catch (e) {
+                    return [];
+                }
+            },
+            classificarCorCabelo: function (cores) {
+                if (!cores || !cores.length) return 'castanho';
+                var filtradas = cores.filter(function (c) {
+                    var media = (c.r + c.g + c.b) / 3;
+                    var sat = Math.abs(c.r - media) + Math.abs(c.g - media) + Math.abs(c.b - media);
+                    return sat < 140 && media > 15 && media < 245;
+                });
+                if (!filtradas.length) filtradas = cores;
+                var cor = filtradas[0];
+                var media = (cor.r + cor.g + cor.b) / 3;
+                var sat = Math.abs(cor.r - media) + Math.abs(cor.g - media) + Math.abs(cor.b - media);
+                if (sat < 40 && media > 90 && media < 200) return 'grisalho';
+                if (cor.r >= 170 && cor.g >= 140 && cor.b >= 100) return 'loiro';
+                if (cor.r >= 140 && cor.g >= 60 && cor.g <= 160 && cor.b <= 100) return 'ruivo';
+                if (cor.r < 55 && cor.g < 55 && cor.b < 55) return 'escuro';
+                return 'castanho';
+            },
+            estimarComprimento: function (imgElement) {
+                var w = imgElement.naturalWidth || imgElement.width || 0;
+                var h = imgElement.naturalHeight || imgElement.height || 0;
+                if (!w || !h) return 'medio';
+                var ratio = h / w;
+                if (ratio > 2.2) return 'longo';
+                if (ratio > 1.35) return 'medio';
+                return 'curto';
+            },
+            estimarTextura: function (imgElement) {
+                try {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    var width = 160, height = 160;
+                    canvas.width = width;
+                    canvas.height = height;
+                    try { ctx.drawImage(imgElement, 0, 0, width, height); } catch (e) { return 'liso'; }
+                    var imageData;
+                    try { imageData = ctx.getImageData(0, 0, width, height); } catch (e) { return 'liso'; }
+                    var data = imageData.data;
+                    var soma = 0, total = 0, variacoes = [];
+                    for (var y = 2; y < height - 2; y += 2) {
+                        for (var x = 2; x < width - 2; x += 2) {
+                            var idx = (y * width + x) * 4;
+                            var brilho = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+                            var diffs = [];
+                            for (var dy = -1; dy <= 1; dy++) {
+                                for (var dx = -1; dx <= 1; dx++) {
+                                    if (!dx && !dy) continue;
+                                    var iv = ((y + dy) * width + (x + dx)) * 4;
+                                    var bv = (data[iv] + data[iv + 1] + data[iv + 2]) / 3;
+                                    diffs.push(Math.abs(brilho - bv));
+                                }
+                            }
+                            var dm = diffs.reduce(function (a, b) { return a + b; }, 0) / diffs.length;
+                            soma += dm;
+                            variacoes.push(dm);
+                            total++;
+                        }
+                    }
+                    if (!total) return 'liso';
+                    variacoes.sort(function (a, b) { return a - b; });
+                    var score = (soma / total + variacoes[Math.floor(variacoes.length / 2)]) / 2;
+                    if (score > 55) return 'cacheado';
+                    if (score > 32) return 'ondulado';
+                    return 'liso';
+                } catch (e) {
+                    return 'liso';
+                }
+            },
+            analisar: function (imgElement) {
+                var cores = this.extrairCoresDominantes(imgElement, 6);
+                var cor = this.classificarCorCabelo(cores);
+                var comprimento = this.estimarComprimento(imgElement);
+                var textura = this.estimarTextura(imgElement);
+                return {
+                    cor: cor,
+                    comprimento: comprimento,
+                    textura: textura,
+                    sugestaoCorte: MotorRecomendacao.resolverCorte(comprimento, textura, 'medio', 'moderno'),
+                    sugestaoCor: MotorRecomendacao.resolverCor(cor, 'media', 'natural')
+                };
+            }
+        };
+
+        // ============================================================
+        // UI HELPERS
+        // ============================================================
+        function addMsg(text, sender, extraHtml) {
+            extraHtml = extraHtml || '';
+            if (!chatEl) return;
+            var div = document.createElement('div');
+            div.className = 'msg ' + sender;
+            div.innerHTML = text + (extraHtml ? ' ' + extraHtml : '');
+            chatEl.appendChild(div);
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        function showTyping() {
+            var div = document.createElement('div');
+            div.className = 'msg bot';
+            div.id = 'typingIndicator';
+            div.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            chatEl.appendChild(div);
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        function removeTyping() {
+            var el = document.getElementById('typingIndicator');
+            if (el) el.remove();
+        }
+
+        function resetState() {
+            if (quizTimer) { clearTimeout(quizTimer); quizTimer = null; }
+            state.mode = 'idle';
+            state.quiz = null;
+            state.step = 0;
+            state.answers = [];
+        }
+
+        // ============================================================
+        // MODAL
+        // ============================================================
+        function openModal(src, title, vitrineLink, mlLink) {
+            var modal = document.getElementById('imageModal');
+            var img = document.getElementById('modalImg');
+            var titleEl = document.getElementById('modalTitle');
+            var vitrineBtn = document.getElementById('modalVitrineLink');
+            var mlBtn = document.getElementById('modalMlLink');
+            if (!modal || !img) return;
+            img.src = src;
+            if (titleEl) titleEl.textContent = title || '';
+            if (vitrineBtn) vitrineBtn.href = vitrineLink || VITRINE_URL;
+            if (mlBtn) mlBtn.href = mlLink || ML_SEARCH + encodeURIComponent(title || '');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            var modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        // ============================================================
+        // BUILDERS DE UI
+        // ============================================================
+        function buildMainCard(item, label) {
+            if (!item) return '';
+            var name = getItemName(item);
+            var sub = getItemSubtitle(item);
+            var vitrine = getVitrineLink(item);
+            var ml = getMlLink(item);
+            var img = item.img || '';
+            var html = '<div class="result-card" data-id="' + escapeAttr(item.id) + '">';
+            html += '<div class="result-hero">';
+            html += '<img src="' + escapeHtml(img) + '" alt="' + escapeHtml(name) + '" onclick="event.stopPropagation(); openModal(this.src, \'' +
+                escapeAttr(name) + '\', \'' + escapeAttr(vitrine) + '\', \'' + escapeAttr(ml) + '\')">';
+            html += '<div class="result-hero-overlay"></div>';
+            html += '<div class="result-hero-info">';
+            html += '<span class="badge">' + escapeHtml(label) + '</span>';
+            html += '<h3>' + escapeHtml(name) + '</h3>';
+            if (sub) html += '<div class="subtitle">' + escapeHtml(sub) + '</div>';
+            html += '</div></div>';
+            html += '<div class="result-body">';
+            html += '<p>' + escapeHtml(item.desc || '') + '</p>';
+            html += '<div class="result-actions" onclick="event.stopPropagation();">';
+            html += '<a href="' + escapeHtml(vitrine) + '" class="btn-vitrine" target="_blank" rel="noopener">Ver na Vitrine</a>';
+            html += '<a href="' + escapeHtml(ml) + '" class="btn-ml" target="_blank" rel="noopener">Ver no Mercado Livre</a>';
+            html += '</div></div></div>';
+            return html;
+        }
+
+        function buildAlternativas(items) {
+            if (!items || !items.length) return '';
+            var html = '<div class="alt-scroll">';
+            items.forEach(function (item) {
+                if (!item) return;
+                var name = getItemName(item);
+                var ml = getMlLink(item);
+                var vitrine = getVitrineLink(item);
+                html += '<div class="alt-item">';
+                html += '<img src="' + escapeHtml(item.img || '') + '" class="alt-item-img" alt="' + escapeHtml(name) +
+                    '" onclick="event.stopPropagation(); openModal(this.src, \'' + escapeAttr(name) + '\', \'' +
+                    escapeAttr(vitrine) + '\', \'' + escapeAttr(ml) + '\')">';
+                html += '<span>' + escapeHtml(name) + '</span></div>';
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function buildMiniProduct(item) {
+            if (!item) return '';
+            var name = getItemName(item);
+            var ml = getMlLink(item);
+            var vitrine = getVitrineLink(item);
+            var desc = (item.desc || '').substring(0, 80);
+            if (item.desc && item.desc.length > 80) desc += '…';
+            var html = '<div class="mini-product">';
+            html += '<div class="mini-product-row">';
+            html += '<img src="' + escapeHtml(item.img || '') + '" class="mini-product-img" alt="' + escapeHtml(name) +
+                '" onclick="event.stopPropagation(); openModal(this.src, \'' + escapeAttr(name) + '\', \'' +
+                escapeAttr(vitrine) + '\', \'' + escapeAttr(ml) + '\')">';
+            html += '<div class="mini-product-info"><h4>' + escapeHtml(name) + '</h4><p>' + escapeHtml(desc) + '</p></div></div>';
+            html += '<div class="mini-product-actions" onclick="event.stopPropagation();">';
+            html += '<a href="' + escapeHtml(vitrine) + '" class="btn-vitrine-mini" target="_blank" rel="noopener">Ver na Vitrine</a>';
+            html += '<a href="' + escapeHtml(ml) + '" class="btn-ml-mini" target="_blank" rel="noopener">Ver no Mercado Livre</a>';
+            html += '</div></div>';
+            return html;
+        }
+
+        function gerarResultadoCompleto(item, label, categoria) {
+            var html = '<div class="consultoria-title">' + escapeHtml(label) + '</div>';
+            html += buildMainCard(item, label);
+            var alts = pickAlternatives(item, categoria, 3);
+            if (alts.length) {
+                html += '<div class="consultoria-title">Outras opções</div>';
+                html += buildAlternativas(alts);
+            }
+            return html;
+        }
+
+        function gerarProdutosEKit() {
+            var prodKeys = Object.keys(styleData).filter(function (k) {
+                return styleData[k] && styleData[k].categoria === 'produto' && !String(k).startsWith('user_');
+            });
+            var kitKeys = Object.keys(styleData).filter(function (k) {
+                return styleData[k] && styleData[k].categoria === 'kit' && !String(k).startsWith('user_');
+            });
+            var ferramentaKeys = Object.keys(styleData).filter(function (k) {
+                return styleData[k] && styleData[k].categoria === 'ferramentas' && !String(k).startsWith('user_');
+            });
+
+            function shuffle(arr) {
+                for (var i = arr.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+                }
+                return arr;
+            }
+            shuffle(prodKeys);
+            shuffle(kitKeys);
+            shuffle(ferramentaKeys);
+
+            var html = '';
+
+            if (prodKeys[0] || prodKeys[1]) {
+                html += '<div class="consultoria-title">Para manter o resultado</div>';
+                if (prodKeys[0]) html += buildMiniProduct(styleData[prodKeys[0]]);
+                if (prodKeys[1]) html += buildMiniProduct(styleData[prodKeys[1]]);
+            }
+
+            if (ferramentaKeys[0]) {
+                html += '<div class="consultoria-title">Ferramenta recomendada</div>';
+                html += buildMiniProduct(styleData[ferramentaKeys[0]]);
+            }
+
+            if (kitKeys.length) {
+                var kit = styleData[kitKeys[Math.floor(Math.random() * kitKeys.length)]];
+                html += '<div class="consultoria-title">Kit Ideal</div>';
+                html += buildMainCard(kit, 'Kit recomendado');
+            }
+
+            return html;
+        }
+
+        // ============================================================
+        // DIAGNÓSTICO (com foto opcional)
+        // ============================================================
+        var DIAGNOSTICO = {
+            perguntas: [
+                {
+                    q: 'Como está a saúde do seu cabelo agora?',
+                    opcoes: [
+                        { t: 'Saudável, mas sem brilho', v: 'opaco' },
+                        { t: 'Ressecado e áspero', v: 'seco' },
+                        { t: 'Quebradiço / elástico', v: 'danificado' },
+                        { t: 'Com química recente (coloração, alisamento)', v: 'quimica' }
+                    ]
+                },
+                {
+                    q: 'Qual é a sua maior preocupação?',
+                    opcoes: [
+                        { t: 'Manter a cor por mais tempo', v: 'cor' },
+                        { t: 'Hidratar profundamente', v: 'hidro' },
+                        { t: 'Reconstruir a fibra', v: 'recon' },
+                        { t: 'Proteger do calor (chapinha/secador)', v: 'calor' }
+                    ]
+                }
+            ],
+            resolver: function (a) {
+                var queixa = a[0] || 'seco';
+                var prioridade = a[1] || 'hidro';
+                if (queixa === 'quimica' || queixa === 'danificado') {
+                    return prioridade === 'cor' ? 'kit-expert-vitamino-color' :
+                        prioridade === 'hidro' ? 'kit-joico-moisture' :
+                            'kit-expert-absolut-repair';
+                }
+                if (queixa === 'seco') {
+                    return prioridade === 'cor' ? 'kit-expert-vitamino-color' : 'kit-joico-moisture';
+                }
+                if (queixa === 'opaco') {
+                    return prioridade === 'calor' ? 'kit-kerastase-thermique' : 'kit-kerastase-chronologiste';
+                }
+                return 'kit-kerastase-resistance';
+            }
+        };
+
+        function startDiagnostico() {
+            resetState();
+            state.mode = 'diagnostico';
+            state.step = 0;
+            state.answers = [];
+            state.analiseFoto = null;
+            addMsg(
+                'Vamos fazer um diagnóstico completo do seu cabelo 💛<br><br>' +
+                'Primeiro, você pode enviar uma <strong>foto do seu cabelo</strong> para uma análise visual. ' +
+                'Se preferir, clique em <strong>Pular foto</strong> para seguir só com as perguntas.',
+                'bot',
+                '<div class="options">' +
+                '<button type="button" data-action="diag-foto">📷 Enviar foto do cabelo</button>' +
+                '<button type="button" data-action="diag-skip-foto">Pular foto e responder perguntas</button>' +
+                '</div>'
+            );
+        }
+
+        function askDiagnosticoImagem() {
+            state.mode = 'diagnostico-foto';
+            if (photoInput) photoInput.click();
+        }
+
+        function pularFotoDiagnostico() {
+            state.mode = 'diagnostico';
+            state.step = 0;
+            state.answers = [];
+            state.analiseFoto = null;
+            addMsg('Sem problemas! Vamos direto às perguntas.', 'bot');
+            setTimeout(function () { askDiagnostico(); }, 350);
+        }
+
+        function processarDiagnosticoComFoto(analise) {
+            state.analiseFoto = analise;
+            state.mode = 'diagnostico';
+            state.step = 0;
+            state.answers = [];
+            showTyping();
+            setTimeout(function () {
+                removeTyping();
+                addMsg(
+                    'Detectei na sua foto: <strong>' + analise.comprimento + '</strong> · <strong>' +
+                    analise.textura + '</strong> · <strong>' + analise.cor + '</strong>.<br><br>' +
+                    'Agora me conta mais para eu fechar o diagnóstico:',
+                    'bot'
+                );
+                askDiagnostico();
+            }, 1400);
+        }
+
+        function askDiagnostico() {
+            var perguntas = DIAGNOSTICO.perguntas;
+            if (state.step >= perguntas.length) {
+                var key = DIAGNOSTICO.resolver(state.answers);
+                var item = styleData[key];
+                if (!item) {
+                    addMsg('Não encontrei um kit exato. Tente o Quiz de Kits.', 'bot');
+                    state.analiseFoto = null;
+                    resetState();
+                    return;
+                }
+
+                var html = '<div class="consultoria-block">';
+                html += gerarResultadoCompleto(item, 'Kit recomendado', 'kit');
+
+                var analise = state.analiseFoto;
+                if (analise) {
+                    var corteItem = analise.sugestaoCorte ? styleData[analise.sugestaoCorte] : null;
+                    var corItem = analise.sugestaoCor ? styleData[analise.sugestaoCor] : null;
+                    var ferramentaId = MotorRecomendacao.resolverFerramenta(
+                        analise.textura === 'cacheado' ? 'cachos' : 'secagem',
+                        analise.textura
+                    );
+                    var ferramentaItem = ferramentaId ? styleData[ferramentaId] : null;
+
+                    if (corteItem) {
+                        html += gerarResultadoCompleto(corteItem, 'Corte sugerido pela foto', 'corte');
+                    }
+                    if (corItem) {
+                        html += gerarResultadoCompleto(corItem, 'Cor sugerida pela foto', 'coloracao');
+                    }
+                    if (ferramentaItem) {
+                        html += gerarResultadoCompleto(ferramentaItem, 'Ferramenta sugerida', 'ferramentas');
+                    }
+                }
+
+                html += gerarProdutosEKit();
+
+                var alts = pickAlternatives(item, 'kit', 2);
+                if (alts.length >= 1) {
+                    html += '<div class="consultoria-title">Comparar kits</div>';
+                    html += '<div class="compare-grid">';
+                    html += buildMainCard(item, 'Kit recomendado');
+                    html += buildMainCard(alts[0], 'Alternativa');
+                    html += '</div>';
+                }
+
+                html += '<span class="refazer-link" onclick="resetAll()">Refazer diagnóstico</span></div>';
+                addMsg(
+                    'Com base no diagnóstico' + (analise ? ' + análise da foto' : '') + ', aqui está sua consultoria completa:',
+                    'bot',
+                    html
+                );
+
+                state.analiseFoto = null;
+                resetState();
+                return;
+            }
+            var p = perguntas[state.step];
+            var optsHtml = '<div class="options">';
+            p.opcoes.forEach(function (op, i) {
+                optsHtml += '<button type="button" data-action="diag-' + i + '">' + escapeHtml(op.t) + '</button>';
+            });
+            optsHtml += '</div>';
+            addMsg(escapeHtml(p.q), 'bot', optsHtml);
+        }
+
+        // ============================================================
+        // QUIZZES
+        // ============================================================
+        var QUIZZES = {
+            corte: {
+                titulo: 'Quiz de Corte',
+                perguntas: [
+                    {
+                        q: 'Qual o comprimento atual do cabelo?',
+                        opcoes: [
+                            { t: 'Curto (acima dos ombros / nuca)', v: 'curto' },
+                            { t: 'Médio (ombros / clavícula)', v: 'medio' },
+                            { t: 'Longo (abaixo da clavícula)', v: 'longo' }
+                        ]
+                    },
+                    {
+                        q: 'Como é a textura natural?',
+                        opcoes: [
+                            { t: 'Liso', v: 'liso' },
+                            { t: 'Ondulado', v: 'ondulado' },
+                            { t: 'Cacheado', v: 'cacheado' }
+                        ]
+                    },
+                    {
+                        q: 'Quanto tempo você aceita gastar para finalizar no dia a dia?',
+                        opcoes: [
+                            { t: 'Mínimo — prático e rápido', v: 'baixo' },
+                            { t: 'Médio — um pouco de modelagem', v: 'medio' },
+                            { t: 'Alto — gosto de finalizar com cuidado', v: 'alto' }
+                        ]
+                    },
+                    {
+                        q: 'Qual vibe combina mais com você?',
+                        opcoes: [
+                            { t: 'Clássico / elegante', v: 'classico' },
+                            { t: 'Moderno / atual', v: 'moderno' },
+                            { t: 'Despojado / ousado', v: 'alternativo' }
+                        ]
+                    }
+                ],
+                resolver: function (a) { return MotorRecomendacao.resolverCorte(a[0], a[1], a[2], a[3]); },
+                categoria: 'corte',
+                label: 'Corte sugerido'
+            },
+            cor: {
+                titulo: 'Quiz de Cor',
+                perguntas: [
+                    {
+                        q: 'Qual a cor base atual (ou natural) do cabelo?',
+                        opcoes: [
+                            { t: 'Loiro', v: 'loiro' },
+                            { t: 'Castanho', v: 'castanho' },
+                            { t: 'Escuro / preto', v: 'escuro' },
+                            { t: 'Ruivo', v: 'ruivo' },
+                            { t: 'Grisalho / branco', v: 'grisalho' }
+                        ]
+                    },
+                    {
+                        q: 'Que nível de manutenção você aceita?',
+                        opcoes: [
+                            { t: 'Baixa — quero durar mais entre retiques', v: 'baixa' },
+                            { t: 'Média — retique de vez em quando', v: 'media' },
+                            { t: 'Alta — topa manutenção frequente', v: 'alta' }
+                        ]
+                    },
+                    {
+                        q: 'Qual resultado você busca?',
+                        opcoes: [
+                            { t: 'Natural — como se o sol tivesse clareado', v: 'natural' },
+                            { t: 'Marcante — contraste e presença', v: 'marcante' },
+                            { t: 'Sofisticado — acabamento uniforme e premium', v: 'uniforme' }
+                        ]
+                    }
+                ],
+                resolver: function (a) { return MotorRecomendacao.resolverCor(a[0], a[1], a[2]); },
+                categoria: 'coloracao',
+                label: 'Cor sugerida'
+            },
+            produto: {
+                titulo: 'Quiz de Produto',
+                perguntas: [
+                    {
+                        q: 'Qual a maior queixa do cabelo agora?',
+                        opcoes: [
+                            { t: 'Ressecado / sem vida', v: 'seco' },
+                            { t: 'Quebrando / elástico', v: 'danificado' },
+                            { t: 'Sem definição (ondulado/cacheado)', v: 'cacho' },
+                            { t: 'Cor desbotando', v: 'cor' },
+                            { t: 'Opaco / sem brilho', v: 'opaco' },
+                            { t: 'Danos de chapinha/secador', v: 'calor' }
+                        ]
+                    },
+                    {
+                        q: 'Você faz (ou pretende fazer) coloração?',
+                        opcoes: [
+                            { t: 'Sim', v: 'sim' },
+                            { t: 'Não', v: 'nao' }
+                        ]
+                    },
+                    {
+                        q: 'Textura predominante?',
+                        opcoes: [
+                            { t: 'Liso', v: 'liso' },
+                            { t: 'Ondulado', v: 'ondulado' },
+                            { t: 'Cacheado', v: 'cacheado' }
+                        ]
+                    }
+                ],
+                resolver: function (a) { return MotorRecomendacao.resolverProduto(a[0], a[1], a[2]); },
+                categoria: 'produto',
+                label: 'Produto sugerido'
+            },
+            ferramentas: {
+                titulo: 'Quiz de Ferramentas',
+                perguntas: [
+                    {
+                        q: 'Para que você precisa da ferramenta?',
+                        opcoes: [
+                            { t: 'Secagem rápida e sem frizz', v: 'secagem' },
+                            { t: 'Alisamento perfeito', v: 'alisamento' },
+                            { t: 'Ondas naturais e regulares', v: 'ondas' },
+                            { t: 'Definir cachos', v: 'cachos' },
+                            { t: 'Volume e modelagem', v: 'volume' },
+                            { t: 'Corte de precisão', v: 'corte' },
+                            { t: 'Degradê e aparo', v: 'degrade' },
+                            { t: 'Desembaraçar cabelos longos', v: 'desembaracar' },
+                            { t: 'Acabamento com brilho', v: 'acabamento' }
+                        ]
+                    },
+                    {
+                        q: 'Como é a textura predominante?',
+                        opcoes: [
+                            { t: 'Liso', v: 'liso' },
+                            { t: 'Ondulado', v: 'ondulado' },
+                            { t: 'Cacheado', v: 'cacheado' }
+                        ]
+                    }
+                ],
+                resolver: function (a) { return MotorRecomendacao.resolverFerramenta(a[0], a[1]); },
+                categoria: 'ferramentas',
+                label: 'Ferramenta sugerida'
+            },
+            kit: {
+                titulo: 'Quiz de Kit',
+                perguntas: [
+                    {
+                        q: 'Qual o foco principal do kit?',
+                        opcoes: [
+                            { t: 'Proteger / prolongar coloração', v: 'coloracao' },
+                            { t: 'Hidratação profunda', v: 'hidro' },
+                            { t: 'Reconstrução (cabelo danificado)', v: 'recon' },
+                            { t: 'Volume e leveza', v: 'volume' },
+                            { t: 'Proteção diária / antidano', v: 'protecao' },
+                            { t: 'Brilho e finalização', v: 'brilho' },
+                            { t: 'Linha premium (Kérastase)', v: 'premium' }
+                        ]
+                    },
+                    {
+                        q: 'Há alguma prioridade extra?',
+                        opcoes: [
+                            { t: 'Tratamento mais intenso', v: 'intenso' },
+                            { t: 'Pré-coloração / metais', v: 'metal' },
+                            { t: 'Hidratação extra', v: 'hidro' },
+                            { t: 'Regeneração / óleo', v: 'regeneracao' },
+                            { t: 'Nenhuma — foco principal basta', v: 'geral' }
+                        ]
+                    }
+                ],
+                resolver: function (a) { return MotorRecomendacao.resolverKit(a[0], a[1]); },
+                categoria: 'kit',
+                label: 'Kit sugerido'
+            }
+        };
+
+        // ============================================================
+        // DÚVIDAS
+        // ============================================================
+        var DUVIDAS = [
+            {
+                q: 'Como escolher o corte ideal?',
+                a: 'O quiz combina <strong>comprimento + textura + tempo de finalização + estilo</strong>. Cada resposta restringe as opções do catálogo. Use o Quiz de Corte ou envie uma foto.'
+            },
+            {
+                q: 'Qual cor agride menos o fio?',
+                a: 'Com manutenção baixa, o motor prioriza <strong>Balayage, Californianas e Babylights</strong>. Técnicas globais fortes (como Ombré) só entram se você aceitar manutenção alta.'
+            },
+            {
+                q: 'Os produtos são originais?',
+                a: 'Sim. Trabalhamos com distribuidores oficiais. Os links levam à vitrine e a buscas no Mercado Livre.'
+            },
+            {
+                q: 'A análise da foto é precisa?',
+                a: 'É uma <strong>estimativa visual</strong> no seu aparelho. O corte e a cor usam a <strong>mesma lógica dos quizzes</strong> (com defaults de tempo médio e estilo moderno).'
+            },
+            {
+                q: 'Qual a diferença entre corte "Blunt" e "Bob"?',
+                a: 'O <strong>Blunt Cut</strong> é reto e sem camadas, enquanto o <strong>Bob</strong> (como o Velvet Bob) tem camadas internas. Ambos estão no catálogo.'
+            },
+            {
+                q: 'O que é "BabyLights Morena"?',
+                a: 'São luzes finíssimas que imitam o efeito natural do sol. Perfeito para manutenção baixa. Veja no catálogo de colorações.'
+            },
+            {
+                q: 'Qual kit usar para cabelos com coloração?',
+                a: 'Recomendo o <strong>Kit Expert Vitamino Color</strong> para proteção diária, ou <strong>Joico Color Endure</strong> para intensificar o brilho. Ambos no catálogo.'
+            },
+            {
+                q: 'Cabelo cacheado: qual corte e produto?',
+                a: 'O <strong>Wolf Cut</strong>, <strong>Shaggy Hair</strong> e <strong>Octopus Cut</strong> são ótimos para cachos. Use <strong>Joico Moisture Mask</strong> para hidratação e o <strong>Difusor Universal</strong> para finalizar.'
+            },
+            {
+                q: 'Como manter o brilho do cabelo?',
+                a: 'Use <strong>Kérastase Chronologiste Oil</strong> para brilho intenso e <strong>Expert Serum Kit</strong> para finalização. Ambos no catálogo de produtos e kits.'
+            },
+            {
+                q: 'O que é o corte "French Bob"?',
+                a: 'É um Chanel curto na altura do maxilar com franja reta. Clássico, sofisticado e atemporal. Está no catálogo de cortes.'
+            },
+            {
+                q: 'O que é "Curtain Bang"?',
+                a: 'É uma <strong>franja cortininha</strong> dividida ao meio que emoldura o rosto suavemente. Versátil, de baixa manutenção e combina com qualquer comprimento. Está no catálogo de cortes.'
+            },
+            {
+                q: 'Qual ferramenta usar para cachos?',
+                a: 'O <strong>Difusor Universal</strong> é ideal para preservar a definição dos cachos sem frizz. Já o <strong>Babyliss Cerâmica</strong> cria cachos definidos. Ambos no catálogo de ferramentas.'
+            }
+        ];
+
+        function startQuiz(tipo) {
+            if (!QUIZZES[tipo]) return;
+            resetState();
+            state.mode = 'quiz';
+            state.quiz = tipo;
+            addMsg('Vamos no <strong>' + QUIZZES[tipo].titulo + '</strong>. Cada resposta afina a próxima recomendação.', 'bot');
+            quizTimer = setTimeout(function () { quizTimer = null; askNextQuestion(); }, 500);
+        }
+
+        function askNextQuestion() {
+            var qData = QUIZZES[state.quiz];
+            if (!qData) { resetState(); return; }
+            if (state.step >= qData.perguntas.length) {
+                var key = qData.resolver(state.answers);
+                showResult(key, qData.label, qData.categoria);
+                return;
+            }
+            var p = qData.perguntas[state.step];
+            var optsHtml = '<div class="options">';
+            p.opcoes.forEach(function (op, i) {
+                optsHtml += '<button type="button" data-action="opt-' + i + '">' + escapeHtml(op.t) + '</button>';
+            });
+            optsHtml += '</div>';
+            addMsg(escapeHtml(p.q), 'bot', optsHtml);
+        }
+
+        function showResult(key, label, categoria) {
+            var item = styleData[key];
+            if (!item) {
+                addMsg('Não encontrei essa recomendação no catálogo. Tente outro perfil ou envie uma foto.', 'bot');
+                resetState();
+                return;
+            }
+            var html = '<div class="consultoria-block">';
+            html += gerarResultadoCompleto(item, label, categoria);
+
+            if (categoria === 'produto' || categoria === 'kit' || categoria === 'ferramentas') {
+                html += gerarProdutosEKit();
+            }
+
+            var alts = pickAlternatives(item, categoria, 2);
+            if (alts.length >= 1) {
+                html += '<div class="consultoria-title">Comparar</div>';
+                html += '<div class="compare-grid">';
+                html += buildMainCard(item, label);
+                html += buildMainCard(alts[0], 'Alternativa');
+                html += '</div>';
+            }
+
+            html += '<span class="refazer-link" onclick="resetAll()">Refazer consulta</span></div>';
+            addMsg('Recomendação alinhada às suas respostas:', 'bot', html);
+            resetState();
+        }
+
+        function showDuvidasMenu() {
+            resetState();
+            var html = '<div class="options">';
+            DUVIDAS.forEach(function (d, i) {
+                html += '<button type="button" data-action="doubt-' + i + '">' + escapeHtml(d.q) + '</button>';
+            });
+            html += '</div>';
+            addMsg('Qual sua dúvida? (' + DUVIDAS.length + ' perguntas baseadas no catálogo)', 'bot', html);
+        }
+
+        function resetAll() {
+            resetState();
+            state.mode = 'idle';
+            state.analiseFoto = null;
+            addMsg('Vamos de novo. Use os botões abaixo ou digite sua dúvida.', 'bot');
+        }
+        window.resetAll = resetAll;
+
+        function processarAnaliseImagem(analise) {
+            showTyping();
+            setTimeout(function () {
+                removeTyping();
+                var html = '<div class="consultoria-block">';
+                var tem = false;
+
+                var corteItem = analise.sugestaoCorte ? styleData[analise.sugestaoCorte] : null;
+                var corItem = analise.sugestaoCor ? styleData[analise.sugestaoCor] : null;
+
+                var ferramentaId = MotorRecomendacao.resolverFerramenta(
+                    analise.textura === 'cacheado' ? 'cachos' : 'secagem',
+                    analise.textura
+                );
+                var ferramentaItem = ferramentaId ? styleData[ferramentaId] : null;
+
+                if (corteItem) {
+                    html += gerarResultadoCompleto(corteItem, 'Corte sugerido', 'corte');
+                    tem = true;
+                }
+                if (corItem) {
+                    html += gerarResultadoCompleto(corItem, 'Cor sugerida', 'coloracao');
+                    tem = true;
+                }
+                if (ferramentaItem) {
+                    html += gerarResultadoCompleto(ferramentaItem, 'Ferramenta sugerida', 'ferramentas');
+                    tem = true;
+                }
+                if (tem) html += gerarProdutosEKit();
+                html += '<span class="refazer-link" onclick="resetAll()">Refazer análise</span></div>';
+
+                if (tem) {
+                    var resumo = 'Detectei: <strong>' + analise.comprimento + '</strong> · <strong>' +
+                        analise.textura + '</strong> · <strong>' + analise.cor + '</strong>';
+                    addMsg(resumo + '<br>Recomendações baseadas na sua foto:', 'bot', html);
+                } else {
+                    addMsg('Não foi possível montar recomendações. Tente outra foto ou um quiz.', 'bot');
+                }
+                resetState();
+            }, 1800);
+        }
+
+        // ============================================================
+        // EVENTOS DOM
+        // ============================================================
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+            var action = btn.dataset.action;
+
+            if (action === 'quiz-corte') return startQuiz('corte');
+            if (action === 'quiz-cor') return startQuiz('cor');
+            if (action === 'quiz-produto') return startQuiz('produto');
+            if (action === 'quiz-ferramentas') return startQuiz('ferramentas');
+            if (action === 'quiz-kit') return startQuiz('kit');
+            if (action === 'duvidas') return showDuvidasMenu();
+            if (action === 'diagnostico') return startDiagnostico();
+
+            if (action === 'diag-foto') {
+                var optsFoto = btn.closest('.options');
+                if (optsFoto) optsFoto.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+                return askDiagnosticoImagem();
+            }
+            if (action === 'diag-skip-foto') {
+                var optsSkip = btn.closest('.options');
+                if (optsSkip) optsSkip.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+                return pularFotoDiagnostico();
+            }
+
+            if (action.indexOf('opt-') === 0 && state.mode === 'quiz') {
+                var idx = parseInt(action.split('-')[1], 10);
+                var quiz = QUIZZES[state.quiz];
+                var question = quiz && quiz.perguntas[state.step];
+                if (!question || !question.opcoes[idx] || btn.disabled) return;
+                state.answers.push(question.opcoes[idx].v);
+                state.step++;
+                var opts = btn.closest('.options');
+                if (opts) opts.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+                quizTimer = setTimeout(function () { quizTimer = null; askNextQuestion(); }, 450);
+                return;
+            }
+
+            if (action.indexOf('diag-') === 0 && state.mode === 'diagnostico') {
+                var di = parseInt(action.split('-')[1], 10);
+                var p = DIAGNOSTICO.perguntas[state.step];
+                if (!p || !p.opcoes[di] || btn.disabled) return;
+                state.answers.push(p.opcoes[di].v);
+                state.step++;
+                var opts2 = btn.closest('.options');
+                if (opts2) opts2.querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+                setTimeout(function () { askDiagnostico(); }, 450);
+                return;
+            }
+
+            if (action.indexOf('doubt-') === 0) {
+                var di2 = parseInt(action.split('-')[1], 10);
+                if (DUVIDAS[di2]) {
+                    addMsg(DUVIDAS[di2].a, 'bot');
+                    var palavras = DUVIDAS[di2].q.toLowerCase().split(' ');
+                    var encontrados = [];
+                    palavras.forEach(function (p) {
+                        if (p.length > 2) {
+                            var r = buscarPorPalavra(p);
+                            r.forEach(function (item) {
+                                if (encontrados.length < 3 && !encontrados.some(function (ee) { return ee.id === item.id; })) {
+                                    encontrados.push(item);
+                                }
+                            });
+                        }
+                    });
+                    if (encontrados.length) {
+                        var html = '<div class="consultoria-title">Estilos relacionados</div>' + buildAlternativas(encontrados.slice(0, 3));
+                        addMsg('Veja também:', 'bot', html);
+                    }
+                }
+                resetState();
+            }
+        });
+
+        // ============================================================
+        // ENVIAR MENSAGEM
+        // ============================================================
+        var sendBtn = document.getElementById('sendBtn');
+        if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+
+        if (inputEl) {
+            inputEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            inputEl.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 70) + 'px';
+            });
+        }
+
+        if (cameraBtn) {
+            cameraBtn.addEventListener('click', function () { photoInput.click(); });
+        }
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function (e) {
+                if (!e.target.files || !e.target.files[0]) return;
+                var file = e.target.files[0];
+                if (!file.type || file.type.indexOf('image/') !== 0) {
+                    addMsg('Envie uma imagem (foto do cabelo).', 'bot');
+                    photoInput.value = '';
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var img = new Image();
+                    img.onload = function () {
+                        var analise = AnalisadorImagem.analisar(img);
+                        addMsg('Foto enviada:', 'user',
+                            '<img src="' + event.target.result + '" class="user-photo" alt="Cabelo" onclick="openModal(this.src, \'Sua foto\')">');
+                        if (inputEl) inputEl.value = '';
+
+                        if (state.mode === 'diagnostico-foto') {
+                            processarDiagnosticoComFoto(analise);
+                        } else {
+                            processarAnaliseImagem(analise);
+                        }
+                    };
+                    img.onerror = function () {
+                        addMsg('Não consegui ler essa imagem. Tente outra.', 'bot');
+                    };
+                    img.src = event.target.result;
+                };
+                reader.onerror = function () {
+                    addMsg('Erro ao carregar a foto.', 'bot');
+                };
+                reader.readAsDataURL(file);
+                photoInput.value = '';
+            });
+        }
+
+        function sendMessage() {
+            if (!inputEl) return;
+            var text = inputEl.value.trim();
+            if (!text) return;
+            addMsg(escapeHtml(text), 'user');
+            inputEl.value = '';
+            inputEl.style.height = 'auto';
+
+            if (state.mode === 'quiz' || state.mode === 'diagnostico') {
+                addMsg('Responda usando os botões acima.', 'bot');
+                return;
+            }
+            if (state.mode === 'diagnostico-foto') {
+                addMsg('Use o botão <strong>📷 Enviar foto</strong> ou clique em <strong>Pular foto</strong> acima.', 'bot');
+                return;
+            }
+
+            var lower = text.toLowerCase();
+
+            if (lower === '/reset') { resetAll(); return; }
+            if (lower === '/ajuda' || lower === '/help') {
+                addMsg(
+                    'Comandos disponíveis:<br>' +
+                    '<strong>/reset</strong> — reiniciar conversa<br>' +
+                    '<strong>/ajuda</strong> — esta mensagem<br>' +
+                    '<strong>/foto</strong> — abrir câmera<br><br>' +
+                    'Use os botões <strong>Cortes, Cores, Produtos, Ferramentas, Kits, Diagnóstico</strong> ou <strong>Dúvidas</strong>.',
+                    'bot'
+                );
+                return;
+            }
+            if (lower === '/foto') {
+                if (photoInput) photoInput.click();
+                return;
+            }
+
+            showTyping();
+            setTimeout(function () {
+                removeTyping();
+                if (/corte|cabelo curto|bob|pixie|camadas|curtain|franja|soft layers|hush/.test(lower)) startQuiz('corte');
+                else if (/cor\b|mecha|luzes|loiro|ruivo|grisalh|coloraç|colorac/.test(lower)) startQuiz('cor');
+                else if (/ferramenta|secador|prancha|babyliss|escova|tesoura|navalha|máquina|maquina|difusor|pente|pincel|capa|massageador|luva|touca/.test(lower)) startQuiz('ferramentas');
+                else if (/produto|shampoo|máscara|mascara|condicionador/.test(lower)) startQuiz('produto');
+                else if (/\bkit\b/.test(lower)) startQuiz('kit');
+                else if (/d[uú]vida|ajuda|como|o que/.test(lower)) showDuvidasMenu();
+                else if (/diagn[óo]stico|sa[úu]de|quebradi/.test(lower)) startDiagnostico();
+                else if (/comparar|diferença|vs/.test(lower)) {
+                    addMsg('Para comparar estilos, digite o nome do estilo que você quer ver.', 'bot');
+                } else {
+                    var results = buscarPorPalavra(text);
+                    if (results.length) {
+                        var html = '<div class="consultoria-block">';
+                        html += '<div class="consultoria-title">🔍 Encontrei ' + results.length + ' resultados para "' + escapeHtml(text) + '"</div>';
+                        results.slice(0, 3).forEach(function (item) {
+                            var cat = item.categoria || 'estilo';
+                            var label = cat === 'corte' ? 'Corte' : cat === 'coloracao' ? 'Cor' : cat === 'kit' ? 'Kit' : cat === 'ferramentas' ? 'Ferramenta' : 'Produto';
+                            html += buildMainCard(item, label);
+                        });
+                        if (results.length > 3) {
+                            html += '<p style="color:var(--muted);font-size:10px;text-align:center;">+ ' + (results.length - 3) + ' resultados</p>';
+                        }
+                        html += '<span class="refazer-link" onclick="resetAll()">Voltar</span></div>';
+                        addMsg('Busca:', 'bot', html);
+                    } else {
+                        addMsg(
+                            'Use os quizzes (<strong>Corte, Cor, Produto, Ferramentas ou Kit</strong>), <strong>Diagnóstico</strong> (recomenda kit), ' +
+                            'ou busque por palavras-chave.<br><br>' +
+                            'Comandos: /reset, /ajuda, /foto',
+                            'bot'
+                        );
+                    }
+                }
+            }, 700);
+        }
+
+        // ============================================================
+        // LOADING — igual ao index.html
+        // ============================================================
+        function initChatLoading() {
+            var loadingScreen = document.getElementById('loadingScreen');
+            var loadingLogo = document.getElementById('loadingLogo');
+            var loadingBar = document.getElementById('loadingBar');
+            var loadingBarContainer = document.getElementById('loadingBarContainer');
+            var loadingPercent = document.getElementById('loadingPercent');
+            var loadingText = document.getElementById('loadingText');
+            if (!loadingScreen) return;
+
+            function finishLoading() {
+                if (loadingBarContainer) loadingBarContainer.style.opacity = '0';
+                if (loadingText) loadingText.style.opacity = '0';
+                if (loadingPercent) loadingPercent.style.opacity = '0';
+
+                setTimeout(function () {
+                    if (loadingLogo) loadingLogo.classList.add('zoom-out');
+                }, 500);
+
+                setTimeout(function () {
+                    if (loadingScreen) loadingScreen.classList.add('hidden');
+                }, 1800);
+            }
+
+            var currentVal = 0;
+            var progressInterval = setInterval(function () {
+                currentVal += 1;
+                if (currentVal > 100) currentVal = 100;
+                if (loadingBar) loadingBar.style.width = currentVal + '%';
+                if (loadingPercent) loadingPercent.textContent = currentVal + '%';
+                if (currentVal >= 90 && loadingText) loadingText.textContent = 'assistente pronto';
+                if (currentVal >= 100) {
+                    clearInterval(progressInterval);
+                    finishLoading();
+                }
+            }, 45);
+
+            setTimeout(function () {
+                if (currentVal < 100) {
+                    clearInterval(progressInterval);
+                    currentVal = 100;
+                    if (loadingBar) loadingBar.style.width = '100%';
+                    if (loadingPercent) loadingPercent.textContent = '100%';
+                    if (loadingText) loadingText.textContent = 'assistente pronto';
+                    finishLoading();
+                }
+            }, 8000);
+        }
+
+        function initApp() {
+            if (typeof styleData === 'undefined' || !styleData || Object.keys(styleData).length === 0) {
+                addMsg(
+                    'Não foi possível carregar os estilos. Coloque o <strong>data.js</strong> na mesma pasta deste chat.',
+                    'bot'
+                );
+                return;
+            }
+            var total = Object.keys(styleData).filter(function (k) {
+                return !String(k).startsWith('user_');
+            }).length;
+            addMsg(
+                '👋 Olá! Sou o <strong>HairOS Assistente</strong> · ' + total + ' estilos no catálogo.<br><br>' +
+                '🎯 <strong>Como posso ajudar:</strong><br>' +
+                '• <strong>Cortes</strong> — quiz para encontrar o corte ideal (inclui <strong>Curtain Bang</strong>)<br>' +
+                '• <strong>Cores</strong> — quiz para escolher a cor perfeita<br>' +
+                '• <strong>Produtos</strong> — quiz para recomendar um produto específico<br>' +
+                '• <strong>Ferramentas</strong> — quiz para escolher a ferramenta ideal<br>' +
+                '• <strong>Kits</strong> — quiz para recomendar um kit completo<br>' +
+                '• <strong>Diagnóstico</strong> — análise (com foto opcional) para recomendar um kit<br>' +
+                '• <strong>Dúvidas</strong> — perguntas frequentes sobre o catálogo<br><br>' +
+                'Envie uma <strong>foto</strong> ou digite sua dúvida!',
+                'bot'
+            );
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            initChatLoading();
+            initApp();
+        });
+    </script>
+</body>
+
+</html>
