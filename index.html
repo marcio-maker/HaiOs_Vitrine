@@ -4076,7 +4076,7 @@
       var mqDesktop = window.matchMedia('(min-width: 900px)');
 
       function gerarQR() {
-        var url = window.location.origin + window.location.pathname;
+        var url = 'https://hai-os-vitrine.vercel.app/';
         qrImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(url) + '&color=1a1612&bgcolor=ffffff';
         qrImage.alt = 'QR code para abrir o HairOS no celular';
       }
