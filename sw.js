@@ -1,5 +1,5 @@
 /* HairOS · Service Worker v1 */
-const CACHE_NAME = 'hairos-v1';
+const CACHE_NAME = 'hairos-v2';
 const ASSETS = [
   './',
   './index.html',
