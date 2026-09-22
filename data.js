@@ -488,7 +488,7 @@ var cortesData = [
       'https://i.pinimg.com/236x/0c/53/77/0c53779e821b89d4fd13555db779b783.jpg'
     ]
   ],
-  ['parisian-fringe-bob', 'corte', 'Parisian Fringe Bob', 'Bob Arredondado com Franja Texturizada',
+  ['parisian-fringe', 'corte', 'Parisian Fringe', 'Bob Arredondado com Franja Texturizada',
     'Bob arredondado na altura do queixo com franja texturizada, inspirado no estilo parisiense. Chique, moderno e atemporal.',
     'https://i.pinimg.com/1200x/f3/90/60/f39060b00b2661fd7c071a5d47bbbc09.jpg',
     [
@@ -504,7 +504,7 @@ var cortesData = [
       'https://i.pinimg.com/736x/0f/17/97/0f1797b50fa870d18d32c417b460677f.jpg'
     ]
   ],
-  ['milano-layered-cut', 'corte', 'Milano Layered Cut', 'Camadas Longas com Brilho Espelhado',
+  ['milano-layered', 'corte', 'Milano Layered', 'Camadas Longas com Brilho Espelhado',
     'Camadas longas com caimento pesado, denso e brilho espelhado, inspirado no estilo milanês. Sofisticado e elegante.',
     'https://i.pinimg.com/736x/e4/a2/98/e4a2980910025f69802da870b53d03db.jpg',
     [
@@ -520,7 +520,7 @@ var cortesData = [
       'https://i.pinimg.com/736x/45/84/d0/4584d0c441b4c7059f4dd1fd6e02046c.jpg'
     ]
   ],
-  ['brazilian-beach-wave-bob', 'corte', 'Brazilian Beach Wave Bob', 'Long Bob com Ondas Tropicais',
+  ['brazilian-beach-wave', 'corte', 'Brazilian Beach Wave', 'Long Bob com Ondas Tropicais',
     'Long bob com ondas largas, movimento tropical e textura desestruturada. Inspirado nas praias brasileiras.',
     'https://i.pinimg.com/1200x/18/58/1f/18581fff007bf6dae432d4d9ed75f6ad.jpg',
     [
@@ -601,7 +601,7 @@ var cortesData = [
       'https://i.pinimg.com/736x/98/6f/3b/986f3b7f6ece364be7d82c4748a47d19.jpg'
     ]
   ],
-  ['wavy-Bob', 'corte', 'Wavy Bob', 'Long Bob Ondulado',
+  ['wavy-bob', 'corte', 'Wavy Bob', 'Long Bob Ondulado',
     'Long bob com ondas naturais e camadas suaves. Perfeito para cabelos ondulados que buscam um visual elegante e despretensioso.',
     'https://i.pinimg.com/1200x/18/58/1f/18581fff007bf6dae432d4d9ed75f6ad.jpg',
     [
@@ -619,7 +619,7 @@ var cortesData = [
   ],
   ['layered-pixie', 'corte', 'Layered Pixie', 'Pixie com Camadas Longas',
     'Pixie com camadas mais longas no topo e laterais. Versátil, permite modelar de diferentes formas e cresce com elegância.',
-    'https://i.pinimg.com/1200x/f8/a9/c5/f8a9c55929c8099041078b816afaf6de.jpg',
+    'https://i.pinimg.com/736x/f9/ff/75/f9ff7537091c6e00b3f1415474f6ec12.jpg',
     [
       'https://i.pinimg.com/1200x/f8/a9/c5/f8a9c55929c8099041078b816afaf6de.jpg',
       'https://i.pinimg.com/736x/6b/60/c0/6b60c0d06ef711d77012ae907d0ea7a2.jpg',
@@ -636,82 +636,82 @@ var cortesData = [
   // ===== NOVOS CORTES — 2ª LEVA · ALTA ALFAIATARIA (5) =====
   ['kitty-cut', 'corte', 'Kitty Cut', 'Bob-Shag Fluido na Altura dos Ombros',
     'Meio-termo sofisticado entre o bob e o shag. Linha de base reta na altura dos ombros com camadas internas suaves e desconectadas que só se revelam no movimento. Caimento fluido e pendular, com moldura frontal que ilumina os traços. Ideal para quem busca elegância contemporânea sem abrir mão da leveza.',
-    'SUBSTITUIR_IMG_KITTY_CUT_PRINCIPAL',
+    'https://i.pinimg.com/1200x/14/1c/a1/141ca123597b6962ddde805e87d9d0d3.jpg',
     [
-      'SUBSTITUIR_IMG_KITTY_CUT_V1',
-      'SUBSTITUIR_IMG_KITTY_CUT_V2',
-      'SUBSTITUIR_IMG_KITTY_CUT_V3',
-      'SUBSTITUIR_IMG_KITTY_CUT_V4',
-      'SUBSTITUIR_IMG_KITTY_CUT_V5',
-      'SUBSTITUIR_IMG_KITTY_CUT_V6',
-      'SUBSTITUIR_IMG_KITTY_CUT_V7',
-      'SUBSTITUIR_IMG_KITTY_CUT_V8',
-      'SUBSTITUIR_IMG_KITTY_CUT_V9',
-      'SUBSTITUIR_IMG_KITTY_CUT_V10'
+      'https://i.pinimg.com/736x/6c/73/a4/6c73a4e52df16ad5a56b701ad63b37b2.jpg',
+      'https://i.pinimg.com/736x/02/d2/ad/02d2adc1433a0b74f7f1c27ecd9a3e7f.jpg',
+      'https://i.pinimg.com/736x/02/3e/27/023e27ef76fa501e627b07389efe7d99.jpg',
+      'https://i.pinimg.com/736x/92/0e/01/920e013dd5bae141dccdac33c3bb6a5b.jpg',
+      'https://i.pinimg.com/1200x/24/ec/e1/24ece1826fc5b814072cf090bff9c86e.jpg',
+      'https://i.pinimg.com/736x/05/18/88/05188821bb2b5bfaf65cc303ce4e6b28.jpg',
+      'https://i.pinimg.com/1200x/d3/51/06/d35106b0a9e94122641f383b7e40a391.jpg',
+      'https://i.pinimg.com/736x/4b/d6/15/4bd615722ed82b1b4214ace23965a7b5.jpg',
+      'https://i.pinimg.com/736x/e8/2a/91/e82a91fb3b2015536d8a348714141b1f.jpg',
+      'https://i.pinimg.com/736x/44/a5/5a/44a55a3e2482ac313cc34e9c3af37145.jpg'
     ]
   ],
   ['side-cut', 'corte', 'Side Cut', 'Desconexão Lateral com Contraste Marcado',
     'Corte ousado com uma das laterais raspadas, gerando forte contraste e atitude urbana. Estrutura assimétrica com ponto de desconexão vertical e linha levemente curvada. O lado longo cria uma cortina de cabelo que pode ser jogada sobre a lateral raspada, criando jogo de forças e efeito meia-lua. Perfeito para quem tem maxilar definido e quer uma declaração estética.',
-    'SUBSTITUIR_IMG_SIDE_CUT_PRINCIPAL',
+    'https://i.pinimg.com/1200x/de/4d/24/de4d244b7955694a245cfdb0d916a70c.jpg',
     [
-      'SUBSTITUIR_IMG_SIDE_CUT_V1',
-      'SUBSTITUIR_IMG_SIDE_CUT_V2',
-      'SUBSTITUIR_IMG_SIDE_CUT_V3',
-      'SUBSTITUIR_IMG_SIDE_CUT_V4',
-      'SUBSTITUIR_IMG_SIDE_CUT_V5',
-      'SUBSTITUIR_IMG_SIDE_CUT_V6',
-      'SUBSTITUIR_IMG_SIDE_CUT_V7',
-      'SUBSTITUIR_IMG_SIDE_CUT_V8',
-      'SUBSTITUIR_IMG_SIDE_CUT_V9',
-      'SUBSTITUIR_IMG_SIDE_CUT_V10'
+      'https://i.pinimg.com/1200x/dd/33/25/dd3325325c0c52ff69a73cf687686e7f.jpg',
+      'https://i.pinimg.com/736x/0b/4e/b0/0b4eb0e120545c32c4511a7b3b5cbb95.jpg',
+      'https://i.pinimg.com/1200x/70/b0/3b/70b03bac67d866dde1a30f2f17928cc9.jpg',
+      'https://i.pinimg.com/1200x/0c/48/3e/0c483e956a923ef406a14e970cd490b7.jpg',
+      'https://i.pinimg.com/1200x/4d/1a/1a/4d1a1a3015b58eaf00bf56f09fdbd1f9.jpg',
+      'https://i.pinimg.com/736x/ca/0e/93/ca0e93cc463fd03fff7db794ae1994af.jpg',
+      'https://i.pinimg.com/236x/b4/2e/96/b42e9601015195a7057613d43724dae0.jpg',
+      'https://i.pinimg.com/1200x/3a/8c/00/3a8c000a3265e2c72db69da805857bca.jpg',
+      'https://i.pinimg.com/1200x/0d/0b/a0/0d0ba0d75b7b23bf945cc9b91c588dab.jpg',
+      'https://i.pinimg.com/1200x/3a/a8/9f/3aa89f20df0421b46aeedc5d4bbcb10c.jpg'
     ]
   ],
   ['long-pixie', 'corte', 'Long Pixie', 'Pixie com Zonas Alta e Frontal Alongadas',
     'Evolução do pixie tradicional com zonas alta e frontal mais longas, garantindo versatilidade e volume maleável. Estrutura em três zonas com transição calculada: nuca curta com graduação fechada, parietais intermediários e topo longo que pode ser jogado para trás, dividido ao meio ou texturizado para frente. Peso invertido concentrado no topo cria movimento e permite penteados variados. Crescimento elegante.',
-    'SUBSTITUIR_IMG_LONG_PIXIE_PRINCIPAL',
+    'https://i.pinimg.com/1200x/db/4f/81/db4f816a70651d7b8864a9ff79df6acb.jpg',
     [
-      'SUBSTITUIR_IMG_LONG_PIXIE_V1',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V2',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V3',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V4',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V5',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V6',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V7',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V8',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V9',
-      'SUBSTITUIR_IMG_LONG_PIXIE_V10'
+      'https://i.pinimg.com/736x/fc/c5/68/fcc568fcce15a692ef2eafce1d4e21af.jpg',
+      'https://i.pinimg.com/736x/94/82/6f/94826f9fe637a42381f75525b307d87f.jpg',
+      'https://i.pinimg.com/736x/66/39/15/66391544dabf1459a61a878f9e63a70e.jpg',
+      'https://i.pinimg.com/1200x/fe/e3/cd/fee3cd37d023a8ef22a96b6a37b3539e.jpg',
+      'https://i.pinimg.com/736x/47/b3/fb/47b3fb31012603b107d18a14a775b4ab.jpg',
+      'https://i.pinimg.com/736x/61/48/e7/6148e7c2a443c6f5afe1fbfadbbda8a5.jpg',
+      'https://i.pinimg.com/736x/65/78/b3/6578b3b6059c7f259d402de2b93ddb3f.jpg',
+      'https://i.pinimg.com/1200x/2a/e6/4b/2ae64b5f9a21eb8d7fa0d57528851a2a.jpg',
+      'https://i.pinimg.com/1200x/9a/d2/1e/9ad21e5dde1d86da9bcd051e29cecdee.jpg',
+      'https://i.pinimg.com/1200x/fc/39/d6/fc39d673b0eaaba1709b3f32a2951b56.jpg'
     ]
   ],
-  ['mullet-hobbit', 'corte', 'Mullet Hobbit', 'Frame Layers com Desconexão Calculada',
-    'Assinatura europeia com desconexão calculada nas patilhas e nuca, emoldurando o rosto com franjas desfiadas. Estrutura radicalmente desconectada em três zonas: patilhas frontais longas caem à frente dos ombros como cortinas laterais, parietais curtos criam transição brusca e nuca alongada dá movimento. A linha de desconexão é visível e intencional — celebra a arquitetura do corte como design. Alonga pescoço e valoriza traços.',
-    'SUBSTITUIR_IMG_MULLET_HOBBIT_PRINCIPAL',
+  ['curly-bob', 'corte', 'Curly Bob', 'Bob Cacheado Arredondado',
+    'Bob cacheado com volume arredondado e cachos definidos que emolduram o rosto. Corte na altura do queixo ou maxilar que valoriza a curvatura natural dos fios, criando um visual elegante, moderno e cheio de personalidade. Ideal para cabelos cacheados e ondulados que buscam um corte estruturado sem perder o movimento natural dos cachos.',
+    'https://i.pinimg.com/736x/1b/b9/46/1bb9462f667f122ff09fbf65e46105e1.jpg',
     [
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V1',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V2',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V3',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V4',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V5',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V6',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V7',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V8',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V9',
-      'SUBSTITUIR_IMG_MULLET_HOBBIT_V10'
+      'https://i.pinimg.com/736x/d5/8b/68/d58b688061c24a0c99820580c0046d3f.jpg',
+      'https://i.pinimg.com/736x/d2/70/9f/d2709f314728cbf66039a6dbe69c451a.jpg',
+      'https://i.pinimg.com/1200x/ed/9c/9f/ed9c9f657706a7ba3a62d53601371202.jpg',
+      'https://i.pinimg.com/736x/a7/8a/e2/a78ae223933fef1a092cbe01a9c22a16.jpg',
+      'https://i.pinimg.com/736x/76/0c/4b/760c4be9742c6450afc0eeb63700a39c.jpg',
+      'https://i.pinimg.com/736x/dc/96/54/dc9654250bf4f72c028310d5911dde09.jpg',
+      'https://i.pinimg.com/736x/fb/ef/6e/fbef6eecc64d0787e0065e001962ac8f.jpg',
+      'https://i.pinimg.com/736x/2d/69/24/2d6924d08fd1c0e12b9e3e01537bb585.jpg',
+      'https://i.pinimg.com/1200x/08/37/04/083704ac74c7e0a8c08735ea45469e90.jpg',
+      'https://i.pinimg.com/736x/30/6a/98/306a9837d67ea1def17c30d76f2ef76d.jpg'
     ]
   ],
-  ['shag-midi-llongueras', 'corte', 'Shag Midi Llongueras', 'Escalado Superior com Duplo Flequillo Lateral',
-    'Corte médio com escalado superior impecável e duplo flequillo lateral para movimento dinâmico. Camadas sobrepostas em diagonal descendente criam volume controlado e movimento direcional. Duas franjas laterais — uma mais curta na testa e outra mais longa nas têmporas — se cruzam quando o cabelo é jogado para o lado, criando efeito cortina dupla. A assinatura do mestre Llongueras: peso onde precisa de estrutura, leveza onde precisa de vida.',
-    'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_PRINCIPAL',
+  ['asymmetric-cut', 'corte', 'Asymmetric Cut', 'Corte Assimétrico com Lados Diferentes',
+    'Corte com lados deliberadamente diferentes, criando contraste e movimento assimétrico. Um lado pode ser mais curto ou ter camadas distintas do outro, resultando em um visual moderno, ousado e cheio de personalidade. A assimetria pode ser sutil (diferença de comprimento) ou marcada (desconexão visível), adaptando-se a diferentes estilos. Perfeito para quem quer sair do convencional e criar um look único e cheio de atitude.',
+    'https://i.pinimg.com/236x/de/f5/a3/def5a3a55b260e9e25250fa02efc9a97.jpg',
     [
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V1',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V2',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V3',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V4',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V5',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V6',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V7',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V8',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V9',
-      'SUBSTITUIR_IMG_SHAG_MIDI_LLONGUERAS_V10'
+      'https://i.pinimg.com/736x/6d/cd/16/6dcd166e935626302ca928759ddd33dd.jpg',
+      'https://i.pinimg.com/736x/5b/ac/23/5bac230abb25c3a9dd94c4ad2344c33a.jpg',
+      'https://i.pinimg.com/736x/3f/11/27/3f1127de905277a8483583ea6c16243a.jpg',
+      'https://i.pinimg.com/1200x/f2/9e/1b/f29e1b5b8016562281007ad2e5391740.jpg',
+      'https://i.pinimg.com/1200x/0a/18/77/0a18779bcfebf97444ddfdb9f0d76fbf.jpg',
+      'https://i.pinimg.com/736x/4e/37/57/4e3757c1e8b80a5d625dd96b02de392f.jpg',
+      'https://i.pinimg.com/736x/da/88/e1/da88e17a8339b416035bc33d6878199a.jpg',
+      'https://i.pinimg.com/1200x/51/7c/58/517c5886bdbe74eed2cdea41680a5f80.jpg',
+      'https://i.pinimg.com/1200x/96/54/84/965484971ae65dfe821188da0cce63d1.jpg',
+      'https://i.pinimg.com/1200x/c0/58/24/c058246ac282d0506c17ed59ca940f8e.jpg'
     ]
   ]
 ];
@@ -966,14 +966,14 @@ var coloracoesData = [
     [
       'https://i.pinimg.com/1200x/07/4e/ea/074eeae2442517936b7e83335b0c31fb.jpg',
       'https://i.pinimg.com/736x/53/a9/a9/53a9a9f6cae1b2cfbc439e44cba9b312.jpg',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V3',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V4',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V5',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V6',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V7',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V8',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V9',
-      'SUBSTITUIR_IMG_BLOND_DE_PROVENCE_V10'
+      'https://i.pinimg.com/736x/d6/bf/d1/d6bfd17338aebccece8b27920eb062d4.jpg',
+      'https://i.pinimg.com/1200x/23/e0/58/23e0584959e272e356bd429280fe1c48.jpg',
+      'https://i.pinimg.com/1200x/2a/52/a5/2a52a5b54527deebdb8382b12e7e243a.jpg',
+      'https://i.pinimg.com/736x/be/50/d5/be50d515a1d8487a39e9f8e5328a92e7.jpg',
+      'https://i.pinimg.com/736x/e9/a1/b6/e9a1b63fd1b5cfc6b03979a9673ef7aa.jpg',
+      'https://i.pinimg.com/736x/2f/89/fc/2f89fc2679984437e027bb8058c2d7f3.jpg',
+      'https://i.pinimg.com/1200x/57/31/b5/5731b56a9361a4b27be2645e83f4677c.jpg',
+      'https://i.pinimg.com/736x/b7/15/82/b71582e483db5ee57b2dee5002605dd5.jpg'
     ]
   ],
   ['castanho-veneza', 'coloracao', 'Castanho Veneza', 'Castanho Profundo com Reflexos Quentes',
@@ -984,12 +984,12 @@ var coloracoesData = [
       'https://i.pinimg.com/1200x/4f/40/02/4f4002c4d5a249913c4e88a6739d1d55.jpg',
       'https://i.pinimg.com/1200x/30/02/94/300294ca9997d7c729a54f29124b3c30.jpg',
       'https://i.pinimg.com/1200x/05/5f/7b/055f7b790631c43cf0bf940dcf7036d6.jpg',
-      'SUBSTITUIR_IMG_CASTANHO_VENEZA_V5',
-      'SUBSTITUIR_IMG_CASTANHO_VENEZA_V6',
-      'SUBSTITUIR_IMG_CASTANHO_VENEZA_V7',
-      'SUBSTITUIR_IMG_CASTANHO_VENEZA_V8',
-      'SUBSTITUIR_IMG_CASTANHO_VENEZA_V9',
-      'SUBSTITUIR_IMG_CASTANHO_VENEZA_V10'
+      'https://i.pinimg.com/1200x/75/06/aa/7506aa8b638a36cf60f1eea3cc0baf01.jpg',
+      'https://i.pinimg.com/1200x/66/33/b3/6633b3d5f27363ed895a7cb870e20c78.jpg',
+      'https://i.pinimg.com/1200x/e4/4b/da/e44bdac8a5105bfec972ba9a543bfeec.jpg',
+      'https://i.pinimg.com/1200x/8f/ff/12/8fff129903ffcc7194c50e7aa30f9fed.jpg',
+      'https://i.pinimg.com/736x/3b/9e/64/3b9e64e1cc395fc4d2c7865026532c61.jpg',
+      'https://i.pinimg.com/736x/37/b6/c9/37b6c9c11eba90179150f789c458d5e3.jpg'
     ]
   ],
   ['morena-iluminada-carioca', 'coloracao', 'Morena Iluminada Carioca', 'Castanho com Mechas Tropicais',
@@ -1001,11 +1001,11 @@ var coloracoesData = [
       'https://i.pinimg.com/736x/fd/e0/da/fde0da86fc5da14fec4f27dc72bbe12a.jpg',
       'https://i.pinimg.com/1200x/b1/9b/b2/b19bb26b3d54810549976ecd9970adc4.jpg',
       'https://i.pinimg.com/736x/88/0e/ae/880eae766ddf0e83527343e5ca4b7b41.jpg',
-      'SUBSTITUIR_IMG_MORENA_ILUMINADA_CARIOCA_V6',
-      'SUBSTITUIR_IMG_MORENA_ILUMINADA_CARIOCA_V7',
-      'SUBSTITUIR_IMG_MORENA_ILUMINADA_CARIOCA_V8',
-      'SUBSTITUIR_IMG_MORENA_ILUMINADA_CARIOCA_V9',
-      'SUBSTITUIR_IMG_MORENA_ILUMINADA_CARIOCA_V10'
+      'https://i.pinimg.com/1200x/1a/e0/dd/1ae0ddbec42dc22ef8ef25524f799de5.jpg',
+      'https://i.pinimg.com/736x/3a/15/8c/3a158c4e8fe184921a993b782c4f63b8.jpg',
+      'https://i.pinimg.com/1200x/f9/3e/92/f93e920afa190e3376f9591b7dce8877.jpg',
+      'https://i.pinimg.com/736x/42/1f/3a/421f3a148a6a37513c9fa04c5ed3b1dc.jpg',
+      'https://i.pinimg.com/736x/52/21/f8/5221f8901b131e40fa5a6f5ae7d0e8ea.jpg'
     ]
   ],
   ['brunette-romantique', 'coloracao', 'Brunette Romantique', 'Castanho com Nuances Suaves',
@@ -1016,12 +1016,12 @@ var coloracoesData = [
       'https://i.pinimg.com/736x/0a/5e/12/0a5e12f20ca2415b8fddbd1f5583b391.jpg',
       'https://i.pinimg.com/736x/9a/6e/27/9a6e279af8b3895e161b38107d50ab8e.jpg',
       'https://i.pinimg.com/736x/c9/3f/9d/c93f9d9610909597859d5aefda31f151.jpg',
-      'SUBSTITUIR_IMG_BRUNETTE_ROMANTIQUE_V5',
-      'SUBSTITUIR_IMG_BRUNETTE_ROMANTIQUE_V6',
-      'SUBSTITUIR_IMG_BRUNETTE_ROMANTIQUE_V7',
-      'SUBSTITUIR_IMG_BRUNETTE_ROMANTIQUE_V8',
-      'SUBSTITUIR_IMG_BRUNETTE_ROMANTIQUE_V9',
-      'SUBSTITUIR_IMG_BRUNETTE_ROMANTIQUE_V10'
+      'https://i.pinimg.com/736x/ad/a1/46/ada146678d7950cc55fe4ad4f01cbd15.jpg',
+      'https://i.pinimg.com/1200x/57/b9/90/57b99020f9f86cd96d54316f31db2103.jpg',
+      'https://i.pinimg.com/1200x/61/6d/45/616d45b91da4964e7e022f58d7a0eb44.jpg',
+      'https://i.pinimg.com/1200x/b7/8a/b6/b78ab6932e183d7e89fbe62ede38fec6.jpg',
+      'https://i.pinimg.com/736x/c3/7c/04/c37c04c8558653e9e0168e13f1a8e1f8.jpg',
+      'https://i.pinimg.com/1200x/0b/15/fa/0b15fa533f2633f86402eb94a9a399d7.jpg'
     ]
   ],
   ['rosso-romano', 'coloracao', 'Rosso Romano', 'Ruivo Intenso com Alma Romana',
@@ -1032,12 +1032,12 @@ var coloracoesData = [
       'https://i.pinimg.com/1200x/e1/d2/e3/e1d2e36c54a43e474203e56775aa20a0.jpg',
       'https://i.pinimg.com/1200x/6f/07/ba/6f07ba70513bad2e3c3135c2ae8b93cc.jpg',
       'https://i.pinimg.com/736x/bb/fd/9a/bbfd9afc2f271f460e5df2cc191d9fc5.jpg',
-      'SUBSTITUIR_IMG_ROSSO_ROMANO_V5',
-      'SUBSTITUIR_IMG_ROSSO_ROMANO_V6',
-      'SUBSTITUIR_IMG_ROSSO_ROMANO_V7',
-      'SUBSTITUIR_IMG_ROSSO_ROMANO_V8',
-      'SUBSTITUIR_IMG_ROSSO_ROMANO_V9',
-      'SUBSTITUIR_IMG_ROSSO_ROMANO_V10'
+      'https://i.pinimg.com/736x/86/0e/ad/860eadf20054a131cd5b86ad32ad748b.jpg',
+      'https://i.pinimg.com/1200x/0f/59/78/0f59782ab7878db0205a4950b0baac05.jpg',
+      'https://i.pinimg.com/736x/e8/54/44/e85444adb13ee125ac8e115e5107e379.jpg',
+      'https://i.pinimg.com/1200x/c9/34/8c/c9348c0e3ae914e596c52a8ba5977f8f.jpg',
+      'https://i.pinimg.com/736x/b3/cc/22/b3cc2294403e9110b15f21ab51480cb0.jpg',
+      'https://i.pinimg.com/1200x/fe/82/eb/fe82ebac89f09eecaaa255ed2b426376.jpg'
     ]
   ]
 ];
