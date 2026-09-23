@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HairOS · Ponte QR · IA</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #faf9f8;
+      color: #1e1e1e;
+      line-height: 1.5;
+      padding: 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app { max-width: 460px; width: 100%; margin: 0 auto; }
+
+    .header { margin-bottom: 1.5rem; text-align: center; }
+    .header h1 { font-size: 1.7rem; font-weight: 500; letter-spacing: -0.02em; }
+    .header p { font-size: 0.9rem; color: #6b6b6b; margin-top: 0.2rem; }
+
+    /* ---------- GALERIA ---------- */
+    .gallery { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .hair-card {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      cursor: pointer;
+      border: 1px solid #f0efed;
+      transition: transform 0.15s ease;
+    }
+    .hair-card:active { transform: scale(0.99); }
+    .hair-card img {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+      display: block; background: #eae8e6;
+    }
+    .hair-card-info { padding: 0.9rem 1rem 1rem; }
+    .hair-card-info h2 { font-size: 1.15rem; font-weight: 500; margin-bottom: 0.15rem; }
+    .hair-card-info p {
+      font-size: 0.85rem; color: #6b6b6b;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ---------- MODAL QR ---------- */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem; z-index: 1000;
+      visibility: hidden; opacity: 0;
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+    .modal-overlay.active { visibility: visible; opacity: 1; }
+
+    .modal-content {
+      background: white; border-radius: 32px;
+      max-width: 420px; width: 100%;
+      padding: 1.2rem 1.2rem 1.5rem;
+      position: relative;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-close {
+      position: absolute; top: 12px; right: 16px;
+      background: rgba(0, 0, 0, 0.06); border: none;
+      width: 36px; height: 36px; border-radius: 30px;
+      font-size: 1.4rem; cursor: pointer; color: #333;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .modal-hair-img {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+      border-radius: 20px; margin-bottom: 1rem; background: #eae8e6;
+    }
+    .modal-hair-name { font-size: 1.35rem; font-weight: 500; margin-bottom: 0.25rem; }
+    .modal-hair-desc { font-size: 0.9rem; color: #5a5a5a; margin-bottom: 1rem; }
+
+    .qrcode-section {
+      display: flex; flex-direction: column; align-items: center;
+      background: #f8f7f6; padding: 1.2rem; border-radius: 24px;
+    }
+    .qrcode-section p {
+      font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.03em; color: #6f6f6f; margin-bottom: 0.5rem;
+    }
+    #qrcode-container {
+      display: flex; justify-content: center; align-items: center;
+      background: white; padding: 0.75rem; border-radius: 16px;
+    }
+    #qrcode-container canvas,
+    #qrcode-container img { display: block; width: 140px; height: 140px; }
+    .qr-hint { font-size: 0.7rem; color: #8b8b8b; margin-top: 0.6rem; text-align: center; word-break: break-all; }
+
+    /* ---------- CARD DETALHADO ---------- */
+    .card-section {
+      background: white; border-radius: 28px;
+      padding: 1.2rem; margin-top: 0.5rem;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+      border: 1px solid #f0efed;
+    }
+
+    .card-hair-img {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+      border-radius: 22px; background: #eae8e6; margin-bottom: 1rem;
+    }
+    .card-hair-name { font-size: 1.4rem; font-weight: 500; margin-bottom: 0.25rem; }
+    .card-hair-desc { font-size: 0.9rem; color: #5a5a5a; margin-bottom: 1.2rem; }
+
+    .prompt-box {
+      background: #f6f5f4; border-radius: 20px;
+      padding: 1rem; margin-bottom: 1rem;
+      font-size: 0.8rem; color: #2c2c2c;
+      border: 1px solid #e6e4e2;
+      white-space: pre-wrap; word-break: break-word;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      line-height: 1.5;
+    }
+
+    .btn-action {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; width: 100%;
+      padding: 1rem 1.2rem; border-radius: 60px;
+      border: none; background: #2b5f8a; color: white;
+      font-size: 1rem; font-weight: 600;
+      cursor: pointer; margin-bottom: 0.6rem;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-action:hover { background: #1f4a6e; }
+    .btn-action:active { transform: scale(0.98); }
+    .btn-action.fase2 { background: #1e1e1e; }
+
+    .aviso-fase1 {
+      background: #e6f7ec; border: 1px solid #a8e6bf;
+      color: #0a5c2a; font-size: 0.85rem;
+      padding: 0.9rem 1rem; border-radius: 16px;
+      margin-bottom: 1rem; line-height: 1.5;
+    }
+    .aviso-fase1 strong { display: block; margin-bottom: 0.2rem; }
+
+    .fase2-img-wrap {
+      border-radius: 20px; overflow: hidden;
+      margin-bottom: 0.5rem; background: #eae8e6;
+    }
+    .fase2-img-wrap img {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block;
+    }
+    .fase2-img-hint {
+      text-align: center; font-size: 0.75rem;
+      color: #6b6b6b; margin-bottom: 1rem; font-style: italic;
+    }
+
+    .fase2-titulo {
+      font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #8b8b8b;
+      margin: 1.2rem 0 0.5rem; font-weight: 600; text-align: center;
+    }
+
+    .instructions {
+      background: #f8f7f6; border-radius: 20px;
+      padding: 1rem 1rem 1rem 1.2rem;
+      margin-bottom: 1rem; font-size: 0.85rem; counter-reset: step;
+    }
+    .instructions li {
+      list-style: none; margin-bottom: 0.5rem;
+      padding-left: 1.8rem; position: relative; counter-increment: step;
+    }
+    .instructions li:last-child { margin-bottom: 0; }
+    .instructions li::before {
+      content: counter(step);
+      position: absolute; left: 0; top: 0;
+      width: 1.3rem; height: 1.3rem;
+      background: #1e1e1e; color: white;
+      border-radius: 40px; font-size: 0.7rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .btn-gemini {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.4rem; width: 100%;
+      padding: 0.9rem 1.2rem; border-radius: 60px;
+      background: #1e1e1e; color: white;
+      font-size: 0.95rem; font-weight: 600;
+      text-decoration: none; margin-bottom: 0.6rem;
+      cursor: pointer;
+    }
+
+    .products-title {
+      font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #8b8b8b;
+      margin: 1rem 0 0.6rem; font-weight: 600; text-align: center;
+    }
+
+    .product-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.85rem 0.4rem;
+      border-bottom: 1px solid #f0efed;
+      text-decoration: none; color: inherit;
+    }
+    .product-item:last-child { border-bottom: none; }
+    .product-info h4 { font-size: 0.92rem; font-weight: 500; }
+    .product-info p { font-size: 0.75rem; color: #8b8b8b; margin-top: 0.1rem; }
+    .product-link-icon {
+      font-size: 1rem; background: #f0efed;
+      width: 34px; height: 34px; border-radius: 40px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: #1e1e1e;
+    }
+
+    .hidden { display: none !important; }
+    .footer-note { margin-top: 1.5rem; font-size: 0.7rem; color: #aaa; text-align: center; }
+
+    .btn-voltar {
+      display: inline-block; font-size: 0.85rem;
+      color: #6b6b6b; text-decoration: none;
+      margin-bottom: 1rem; cursor: pointer;
+      background: none; border: none;
+      padding: 0.3rem 0; font-family: inherit;
+    }
+    .btn-voltar:hover { color: #1e1e1e; }
+
+    .loading-msg {
+      text-align: center; padding: 3rem 1rem;
+      color: #8b8b8b; font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>HairOS · Ponte</h1>
+      <p>referência · QR · simulação IA</p>
+    </header>
+
+    <div class="gallery" id="gallery">
+      <div class="loading-msg">Carregando cortes do HairOS...</div>
+    </div>
+    <div id="card-area" class="hidden"></div>
+
+    <!-- MODAL QR -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-content">
+        <button class="modal-close" id="modalCloseBtn">×</button>
+        <img class="modal-hair-img" id="modalHairImg" src="" alt="Corte">
+        <h3 class="modal-hair-name" id="modalHairName"></h3>
+        <p class="modal-hair-desc" id="modalHairDesc"></p>
+        <div class="qrcode-section">
+          <p>📱 aponte a câmera</p>
+          <div id="qrcode-container"></div>
+          <div class="qr-hint" id="qrHint"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">ponte HairOS · reaproveita data.js</div>
+  </div>
+
+  <!-- 1) CARREGA A BASE DE DADOS DO HAIR-OS VITRINE -->
+  <script src="data.js"></script>
+
+  <!-- 2) BIBLIOTECA DE QR CODE -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <!-- 3) LÓGICA DA PONTE -->
+  <script>
+    // ============================================================
+    // CONFIGURAÇÃO DE URL PÚBLICA
+    // Se estiver hospedado, deixe '' vazio (detecta automático).
+    // Se estiver testando local, informe o IP da máquina.
+    // ============================================================
+    const URL_PUBLICA_MANUAL = '';
+
+    // ============================================================
+    // 1. ADAPTADOR: extrai os cortes do data.js
+    // ============================================================
+    // O data.js tem cortesData no formato:
+    //   [id, categoria, corte, title, desc, img, variants]
+    // Nós transformamos em objetos legíveis.
+    // ============================================================
+    function extrairCortes() {
+      const cortes = [];
+
+      if (typeof cortesData === 'undefined') {
+        console.warn('⚠️ cortesData não encontrado. Verifique se data.js foi carregado antes.');
+        return [];
+      }
+
+      cortesData.forEach(function (item) {
+        const id = item[0];
+        const categoria = item[1];
+        const corte = item[2];
+        const title = item[3];
+        const desc = item[4];
+        const img = item[5];
+        const variants = item[6] || [];
+
+        cortes.push({
+          id: id,
+          nome: corte,
+          titulo: title,
+          descricao: desc,
+          imagem: img,
+          variantes: variants,
+          categoria: categoria
+        });
+      });
+
+      return cortes;
+    }
+
+    const CORTES = extrairCortes();
+    console.log('✅ Cortes carregados do data.js:', CORTES.length);
+
+    // ============================================================
+    // 2. GERA O PROMPT PERSONALIZADO PARA CADA CORTE
+    // ============================================================
+    function gerarPrompt(corte) {
+      return `Você vai receber DUAS imagens nesta conversa:
+
+IMAGEM 1: foto de uma pessoa (a cliente).
+IMAGEM 2: imagem de referência do corte "${corte.nome}" (${corte.titulo}).
+
+Sua tarefa: aplicar o corte da IMAGEM 2 na pessoa da IMAGEM 1, gerando uma simulação fotorrealista.
+
+Regras obrigatórias:
+- Preserve rigorosamente o rosto, a identidade, as características faciais, as proporções e a expressão da pessoa da IMAGEM 1.
+- Mantenha a iluminação, o tom de pele e o fundo originais da IMAGEM 1.
+- Aplique o corte da IMAGEM 2 respeitando o formato, o caimento, o volume e a textura originais.
+- O resultado deve parecer uma FOTO REAL, nunca uma montagem, peruca ou colagem artificial.
+- Integre o cabelo naturalmente com o couro cabeludo e a pele, com sombras e transições suaves.
+- Não altere roupas, expressão, fundo ou qualquer outro elemento da IMAGEM 1.
+- A saída deve ser uma única imagem fotorrealista e natural.
+
+Se as duas imagens não forem enviadas, peça ao usuário para anexá-las antes de gerar o resultado.`;
+    }
+
+    // ============================================================
+    // 3. PRODUTOS SUGERIDOS (genéricos por corte)
+    // ============================================================
+    // Substitua os links pelos seus links de afiliado do Mercado Livre.
+    // ============================================================
+    function produtosParaCorte(corte) {
+      return [
+        { nome: 'Máscara de hidratação intensa', desc: 'Para manter o corte saudável', link: 'https://mercadolivre.com.br' },
+        { nome: 'Sérum anti-frizz', desc: 'Finalizador leve', link: 'https://mercadolivre.com.br' },
+        { nome: 'Protetor térmico', desc: 'Essencial antes do secador', link: 'https://mercadolivre.com.br' }
+      ];
+    }
+
+    // ============================================================
+    // 4. URL BASE
+    // ============================================================
+    function getBaseUrl() {
+      if (URL_PUBLICA_MANUAL && URL_PUBLICA_MANUAL.trim() !== '') {
+        return URL_PUBLICA_MANUAL.split('?')[0];
+      }
+      if (window.location.protocol === 'file:') {
+        return window.location.href.split('?')[0];
+      }
+      return window.location.origin + window.location.pathname;
+    }
+
+    function buildCorteUrl(id) {
+      return `${getBaseUrl()}?corte=${id}`;
+    }
+
+    function getCorteById(id) {
+      return CORTES.find(c => c.id === id);
+    }
+
+    // ============================================================
+    // 5. REFERÊNCIAS DOM
+    // ============================================================
+    const galleryEl = document.getElementById('gallery');
+    const cardArea = document.getElementById('card-area');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalHairImg = document.getElementById('modalHairImg');
+    const modalHairName = document.getElementById('modalHairName');
+    const modalHairDesc = document.getElementById('modalHairDesc');
+    const qrcodeContainer = document.getElementById('qrcode-container');
+    const qrHint = document.getElementById('qrHint');
+
+    // ============================================================
+    // 6. RENDER GALERIA (só cortes)
+    // ============================================================
+    function renderGallery() {
+      const cortes = CORTES.filter(c => c.categoria === 'corte');
+
+      if (cortes.length === 0) {
+        galleryEl.innerHTML = '<div class="loading-msg">Nenhum corte encontrado no data.js</div>';
+        return;
+      }
+
+      galleryEl.innerHTML = cortes.map(corte => `
+        <div class="hair-card" data-corte-id="${corte.id}">
+          <img src="${corte.imagem}" alt="${corte.nome}" loading="lazy"
+               onerror="this.src='https://i.pinimg.com/736x/1e/59/3c/1e593c46f134db1bc0233b96d12d555f.jpg'">
+          <div class="hair-card-info">
+            <h2>${corte.nome}</h2>
+            <p>${corte.descricao}</p>
+          </div>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.hair-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const corte = getCorteById(card.dataset.corteId);
+          if (corte) openModal(corte);
+        });
+      });
+    }
+
+    // ============================================================
+    // 7. MODAL QR
+    // ============================================================
+    function openModal(corte) {
+      modalHairImg.src = corte.imagem;
+      modalHairImg.alt = corte.nome;
+      modalHairName.textContent = corte.nome;
+      modalHairDesc.textContent = corte.descricao;
+      renderQRCode(corte.id);
+      modalOverlay.classList.add('active');
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      qrcodeContainer.innerHTML = '';
+    }
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    function renderQRCode(corteId) {
+      qrcodeContainer.innerHTML = '';
+      const url = buildCorteUrl(corteId);
+      qrHint.textContent = url;
+
+      if (typeof QRCode === 'undefined') {
+        qrcodeContainer.innerHTML = `<a href="${url}" target="_blank" style="font-size:0.8rem;">🔗 abrir link</a>`;
+        return;
+      }
+
+      try {
+        new QRCode(qrcodeContainer, {
+          text: url,
+          width: 140, height: 140,
+          colorDark: '#1e1e1e', colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch (err) {
+        qrcodeContainer.innerHTML = `<a href="${url}" target="_blank">🔗 abrir</a>`;
+      }
+    }
+
+    // ============================================================
+    // 8. CARD DETALHADO (após scan do QR)
+    // ============================================================
+    function renderHairCard(corte) {
+      galleryEl.classList.add('hidden');
+
+      const prompt = gerarPrompt(corte);
+      const produtos = produtosParaCorte(corte);
+
+      const productsHtml = produtos.map(prod => `
+        <a class="product-item" href="${prod.link}" target="_blank" rel="noopener noreferrer">
+          <div class="product-info">
+            <h4>${prod.nome}</h4>
+            <p>${prod.desc}</p>
+          </div>
+          <div class="product-link-icon">↗</div>
+        </a>
+      `).join('');
+
+      cardArea.innerHTML = `
+        <button class="btn-voltar" onclick="window.location.href='${getBaseUrl()}'">
+          ← voltar
+        </button>
+
+        <div class="card-section">
+          <img class="card-hair-img" src="${corte.imagem}" alt="${corte.nome}"
+               onerror="this.src='https://i.pinimg.com/736x/1e/59/3c/1e593c46f134db1bc0233b96d12d555f.jpg'">
+          <h2 class="card-hair-name">${corte.nome}</h2>
+          <p class="card-hair-desc">${corte.descricao}</p>
+
+          <button class="btn-action" id="acaoBtn">
+            🚀 Preparar simulação com IA
+          </button>
+
+          <div id="conteudoArea"></div>
+
+          <div class="products-title">produtos recomendados</div>
+          ${productsHtml}
+        </div>
+      `;
+
+      cardArea.classList.remove('hidden');
+
+      // ============================================================
+      // FLUXO DE 2 FASES
+      // ============================================================
+      let fase = 1;
+      const acaoBtn = document.getElementById('acaoBtn');
+      const conteudoArea = document.getElementById('conteudoArea');
+
+      acaoBtn.addEventListener('click', async () => {
+        // FASE 1: copia prompt + abre Gemini
+        if (fase === 1) {
+          let promptOk = false;
+          try {
+            await navigator.clipboard.writeText(prompt);
+            promptOk = true;
+          } catch (err) {
+            console.warn('Clipboard falhou:', err);
+          }
+
+          try {
+            window.open('https://gemini.google.com', '_blank');
+          } catch (err) {
+            console.warn('window.open bloqueado:', err);
+          }
+
+          conteudoArea.innerHTML = `
+            <div class="aviso-fase1">
+              <strong>✅ Prompt copiado!</strong>
+              ${promptOk ? '' : '⚠️ Se não copiou, toque abaixo.<br>'}
+              ✨ O Gemini está abrindo em outra aba...
+            </div>
+            ${!promptOk ? `
+              <div class="aviso-fallback" style="background:#fff4e5;border:1px solid #ffd9a0;border-radius:16px;padding:1rem;margin-bottom:1rem;">
+                <div style="font-size:0.8rem;color:#7a4a00;margin-bottom:0.5rem;font-weight:600;">Copie o prompt manualmente:</div>
+                <textarea readonly style="width:100%;height:120px;font-size:0.72rem;padding:0.6rem;border-radius:10px;border:1px solid #e0c89a;font-family:monospace;resize:none;">${prompt}</textarea>
+              </div>
+            ` : ''}
+          `;
+
+          acaoBtn.textContent = '👁️ Ver imagem + prompt';
+          acaoBtn.classList.add('fase2');
+          fase = 2;
+          return;
+        }
+
+        // FASE 2: mostra imagem + prompt + instruções
+        if (fase === 2) {
+          conteudoArea.innerHTML = `
+            <div class="aviso-fase1">
+              <strong>✅ Prompt já foi copiado</strong>
+              O Gemini está aberto em outra aba. Agora salve a imagem abaixo.
+            </div>
+
+            <div class="fase2-titulo">imagem do corte</div>
+            <div class="fase2-img-wrap">
+              <img src="${corte.imagem}" alt="${corte.nome}"
+                   onerror="this.src='https://i.pinimg.com/736x/1e/59/3c/1e593c46f134db1bc0233b96d12d555f.jpg'">
+            </div>
+            <div class="fase2-img-hint">
+              👆 toque e segure na imagem para salvar<br>
+              ou tire um print da tela
+            </div>
+
+            <div class="fase2-titulo">prompt</div>
+            <div class="prompt-box">${prompt}</div>
+
+            <div class="fase2-titulo">instruções</div>
+            <div class="instructions">
+              <li>Copie o prompt (já foi copiado).</li>
+              <li>Abra o Gemini (já está aberto).</li>
+              <li>Envie <strong>sua foto</strong>.</li>
+              <li>Envie <strong>a imagem do corte</strong> acima.</li>
+              <li>Cole o prompt.</li>
+              <li>Gere sua simulação.</li>
+            </div>
+
+            <a class="btn-gemini" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
+              ✨ Abrir Gemini novamente
+            </a>
+          `;
+
+          acaoBtn.textContent = '🔄 Preparar novamente';
+          acaoBtn.classList.remove('fase2');
+          fase = 1;
+          return;
+        }
+      });
+    }
+
+    // ============================================================
+    // 9. INICIALIZAÇÃO
+    // ============================================================
+    function init() {
+      const params = new URLSearchParams(window.location.search);
+      const corteId = params.get('corte');
+
+      if (corteId) {
+        const corte = getCorteById(corteId);
+        if (corte) {
+          renderHairCard(corte);
+          document.title = `${corte.nome} · HairOS`;
+        } else {
+          renderGallery();
+          const aviso = document.createElement('p');
+          aviso.style.cssText = 'text-align:center;color:#b33;margin-top:1rem;';
+          aviso.textContent = 'Corte não encontrado. Selecione um da galeria.';
+          cardArea.appendChild(aviso);
+          cardArea.classList.remove('hidden');
+        }
+      } else {
+        renderGallery();
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
