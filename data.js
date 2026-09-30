@@ -1,5 +1,5 @@
 // data.js
-// Base de dados completa do HairOS - 95 estilos
+// Base de dados completa do HairOS - 100 estilos
 // ============================================================
 
 // ============================================================
@@ -187,19 +187,61 @@ function createCard(id, categoria, corte, title, desc, img, variants) {
 }
 
 // ============================================================
+// LINKS DE AFILIADO MERCADO LIVRE — FONTE ÚNICA (apenas estes 5)
+// Todo botão "Ver no Mercado Livre" / "Obter Kit Completo" do
+// index.html e do assistente.html resolve por getAffiliateLink().
+// ============================================================
+var ML_LINKS = {
+  keune:     'https://meli.la/1GbiW7M',
+  inoa:      'https://meli.la/28LpPj2',
+  kerastase: 'https://meli.la/1MwSY7v',
+  expert:    'https://meli.la/2nmeunk',
+  joico:     'https://meli.la/2x9xqBe'
+};
+
+// Destino padrão quando o item não cita uma das marcas.
+// (ajuste aqui se quiser outro kit para cortes, colorações ou ferramentas)
+var ML_LINK_PADRAO = {
+  corte:        ML_LINKS.kerastase,
+  coloracao:    ML_LINKS.inoa,
+  produto:      ML_LINKS.kerastase,
+  kit:          ML_LINKS.kerastase,
+  ferramentas:  ML_LINKS.keune,
+  _geral:       ML_LINKS.kerastase
+};
+
+function _mlNormalizar(txt) {
+  var t = String(txt || '').toLowerCase();
+  return t.normalize ? t.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : t;
+}
+
+// Sempre devolve um dos 5 links acima — nunca busca, nunca '#'.
+function getAffiliateLink(item) {
+  if (!item) return ML_LINK_PADRAO._geral;
+  // Só nome/título/id (a descrição gera falsos positivos)
+  var h = _mlNormalizar((item.corte || '') + ' ' + (item.title || '') + ' ' + (item.id || ''));
+  if (/kerastase/.test(h)) return ML_LINKS.kerastase;
+  if (/joico/.test(h)) return ML_LINKS.joico;
+  if (/expert|l.?oreal|vitamino|absolut|metal.?detox/.test(h)) return ML_LINKS.expert;
+  if (/keune/.test(h)) return ML_LINKS.keune;
+  if (/inoa|dia.?color/.test(h)) return ML_LINKS.inoa;
+  return ML_LINK_PADRAO[item.categoria] || ML_LINK_PADRAO._geral;
+}
+
+// ============================================================
 // DADOS DOS KITS DE COLORAÇÃO E CUIDADOS
 // ============================================================
 var coloracaoKits = {
   kits: [{
     nome: 'Kit Keune',
     badge: 'Comercial',
-    link: 'https://meli.la/1GbiW7M',
+    link: ML_LINKS.keune,
     produtos: 'Tinta Color + Semi Color + Oxidante 20 vol + Ativador de Cor',
     imagem: 'https://i.pinimg.com/736x/f9/71/b6/f971b6679e2c7fda2f777c25d6e49b66.jpg'
   }, {
     nome: 'Kit L\'Oréal',
     badge: 'Técnico',
-    link: 'https://meli.la/28LpPj2',
+    link: ML_LINKS.inoa,
     produtos: 'Tinta INOA + Tonalizante Dia Color + Oxidante 20 vol + Revelador 9 vol',
     imagem: 'https://i.pinimg.com/1200x/8a/c7/0e/8ac70e6de8ca914b0a3e53ff6b93a0cc.jpg'
   }]
@@ -209,19 +251,19 @@ var cuidadosKits = {
   kits: [{
     nome: 'Kit Kerastase',
     badge: 'Premium',
-    link: 'https://meli.la/1MwSY7v',
+    link: ML_LINKS.kerastase,
     produtos: 'Shampoo Nutritive + Condicionador Resistance + Máscara Genesis + Leave-In Elixir Ultime',
     imagem: 'https://i.pinimg.com/1200x/0c/dd/f1/0cddf1a088784488cc73ffbedfa53ebf.jpg'
   }, {
     nome: 'Kit L\'Oréal Expert',
     badge: 'Profissional',
-    link: 'https://meli.la/2nmeunk',
+    link: ML_LINKS.expert,
     produtos: 'Shampoo Vitamino Color + Condicionador Absolut Repair + Máscara Nutrioil + Sérum Pro Longer',
     imagem: 'https://i.pinimg.com/736x/5b/da/00/5bda009665f3eff9b6aa04f58e2c473f.jpg'
   }, {
     nome: 'Kit Joico',
     badge: 'Hidratação',
-    link: 'https://meli.la/2x9xqBe',
+    link: ML_LINKS.joico,
     produtos: 'Shampoo Moisture Recovery + Condicionador + Máscara Intensa + Leave-In K-PAK',
     imagem: 'https://i.pinimg.com/1200x/55/d6/10/55d610f599b3c10b5fe4cafceb5104fc.jpg'
   }]
@@ -717,7 +759,7 @@ var cortesData = [
 ];
 
 // ============================================================
-// DADOS: COLORAÇÕES (20 itens)
+// DADOS: COLORAÇÕES (25 itens)
 // ============================================================
 var coloracoesData = [
   ['ombre-tiger-eye', 'coloracao', 'Ombré Tiger Eye', 'Transição Dourada',
@@ -1038,6 +1080,93 @@ var coloracoesData = [
       'https://i.pinimg.com/1200x/c9/34/8c/c9348c0e3ae914e596c52a8ba5977f8f.jpg',
       'https://i.pinimg.com/736x/b3/cc/22/b3cc2294403e9110b15f21ab51480cb0.jpg',
       'https://i.pinimg.com/1200x/fe/82/eb/fe82ebac89f09eecaaa255ed2b426376.jpg'
+    ]
+  ],
+  // ===== COLORAÇÕES ADICIONAIS (5) — chegam a 100 cards =====
+  // TROCAR_IMAGEM: fotos PROVISÓRIAS, reaproveitadas de colorações parecidas. Substitua por URLs próprias do Pinterest.
+  // provisório: imagens de ombre-tiger-eye / californianas
+  ['mel-e-avela', 'coloracao', 'Mel & Avelã', 'Castanho Dourado Quente',
+    'Base castanho-avelã com reflexos em mel distribuídos de forma suave, criando profundidade e luz sem contraste marcado. Funciona melhor sobre fundo natural castanho médio, e o crescimento não forma linha de raiz evidente. Ex.: base 5.0/6.0 + reflexos 7.3 (dourado) + gloss 7.34 (dourado acobreado).',
+    'https://i.pinimg.com/736x/45/26/d3/4526d3bd85f723c62b5d376a21575ae5.jpg',
+    [
+      'https://i.pinimg.com/1200x/fc/77/96/fc7796a5b8212a0fd41f43792ede5351.jpg',
+      'https://i.pinimg.com/736x/80/f3/bb/80f3bbce1fb5bb37fd8c921cd8ada7d2.jpg',
+      'https://i.pinimg.com/736x/45/9c/a1/459ca1eba3cc70bc50f8414b1490a0b0.jpg',
+      'https://i.pinimg.com/736x/cd/3c/0e/cd3c0ef3f5b2a4ec9c4e8b1e110b46ba.jpg',
+      'https://i.pinimg.com/736x/81/b3/e3/81b3e38fcd2c99d11e48657daad65c74.jpg',
+      'https://i.pinimg.com/236x/3c/ef/b5/3cefb5c8bcf36f31e91ccad6f55c79f5.jpg',
+      'https://i.pinimg.com/736x/2b/93/62/2b936201040763501177f1cc4c1106c3.jpg',
+      'https://i.pinimg.com/736x/ca/96/e9/ca96e93dd930794dfc51755adcc831bf.jpg',
+      'https://i.pinimg.com/736x/41/c0/6d/41c06d6ed54a7b4605c5aa131a7b14b7.jpg',
+      'https://i.pinimg.com/736x/c7/92/25/c7922574476f525938331938daf277f7.jpg'
+    ]
+  ],
+  // provisório: imagens de morena-iluminada-carioca / expensive-brunette
+  ['castanho-caramelo', 'coloracao', 'Castanho Caramelo', 'Brilho Quente e Natural',
+    'Castanho com nuances caramelo que aquecem a pele e realçam o brilho. Pede pouca descoloração, e a proteção de cor mantém o calor do tom por mais tempo. Ex.: base 4.0/5.0 + reflexos 6.34 (dourado acobreado) + gloss 6.3.',
+    'https://i.pinimg.com/1200x/46/9d/b3/469db33b0463950876ea5d975da0e566.jpg',
+    [
+      'https://i.pinimg.com/736x/a3/4f/21/a34f2174f0d2482713d493ed5b60dcb1.jpg',
+      'https://i.pinimg.com/736x/fd/e0/da/fde0da86fc5da14fec4f27dc72bbe12a.jpg',
+      'https://i.pinimg.com/1200x/b1/9b/b2/b19bb26b3d54810549976ecd9970adc4.jpg',
+      'https://i.pinimg.com/736x/88/0e/ae/880eae766ddf0e83527343e5ca4b7b41.jpg',
+      'https://i.pinimg.com/1200x/1a/e0/dd/1ae0ddbec42dc22ef8ef25524f799de5.jpg',
+      'https://i.pinimg.com/736x/3a/15/8c/3a158c4e8fe184921a993b782c4f63b8.jpg',
+      'https://i.pinimg.com/1200x/f9/3e/92/f93e920afa190e3376f9591b7dce8877.jpg',
+      'https://i.pinimg.com/736x/42/1f/3a/421f3a148a6a37513c9fa04c5ed3b1dc.jpg',
+      'https://i.pinimg.com/736x/52/21/f8/5221f8901b131e40fa5a6f5ae7d0e8ea.jpg',
+      'https://i.pinimg.com/1200x/3e/b2/3d/3eb23d9fc16593ff95825fe42012d267.jpg'
+    ]
+  ],
+  // provisório: imagens de vanilla-blonde / blond-de-provence
+  ['loiro-champagne', 'coloracao', 'Loiro Champagne', 'Loiro Suave e Luminoso',
+    'Loiro claro com fundo levemente dourado-rosado, mais delicado que o platinado. Exige descoloração controlada e tonalização de manutenção para não amarelar. Ex.: descolorir até nível 9 + tonalizante 9.13 (bege dourado), renovado a cada 4–6 semanas.',
+    'https://i.pinimg.com/736x/36/2e/76/362e768aeb7ed3f16afb82c85bf8bb7e.jpg',
+    [
+      'https://i.pinimg.com/736x/e8/31/c4/e831c4a68d507a47952ab3ab3349209f.jpg',
+      'https://i.pinimg.com/736x/b7/15/82/b71582e483db5ee57b2dee5002605dd5.jpg',
+      'https://i.pinimg.com/736x/53/a9/a9/53a9a9f6cae1b2cfbc439e44cba9b312.jpg',
+      'https://i.pinimg.com/736x/35/db/af/35dbafa03c10942692ed5e38f9131229.jpg',
+      'https://i.pinimg.com/736x/00/42/c9/0042c9ecd8f745f76c58d1b85f9ed36e.jpg',
+      'https://i.pinimg.com/1200x/99/2d/e5/992de584e0b0e2749797baf37280f536.jpg',
+      'https://i.pinimg.com/1200x/5f/ce/53/5fce536489e8c7241f02770ebb3634b4.jpg',
+      'https://i.pinimg.com/736x/81/4c/4d/814c4d34d64919cea3bdfd878c5250e5.jpg',
+      'https://i.pinimg.com/1200x/27/dc/08/27dc0830061a5ab30fb7e4fa82b6b5a3.jpg',
+      'https://i.pinimg.com/1200x/07/4e/ea/074eeae2442517936b7e83335b0c31fb.jpg'
+    ]
+  ],
+  // provisório: imagens de mocha-mousse / brunette-romantique
+  ['chocolate-amargo', 'coloracao', 'Chocolate Amargo', 'Castanho Profundo com Brilho',
+    'Castanho escuro e denso de reflexo neutro, cujo brilho vem da cutícula bem selada. Boa escolha para renovar uma cor cansada com aspecto saudável. Ex.: base 3.0/4.0 + tinta 4.0 (natural) + gloss 4.01 (natural acinzentado) para neutralizar o reflexo quente.',
+    'https://i.pinimg.com/1200x/d3/2d/74/d32d74825bfa044d8bb2251ccc5357a4.jpg',
+    [
+      'https://i.pinimg.com/736x/9b/15/b9/9b15b9e256a6114b5148bee2650c1364.jpg',
+      'https://i.pinimg.com/1200x/e9/c4/f9/e9c4f9b7f739f33ef4841e5e28aaed25.jpg',
+      'https://i.pinimg.com/1200x/95/31/cf/9531cfe923ccfc3b4ec2bb62483a9a8c.jpg',
+      'https://i.pinimg.com/1200x/34/62/e0/3462e0f503447a59bf41c070ca5d5444.jpg',
+      'https://i.pinimg.com/736x/a5/ff/51/a5ff5141709b98ed5ce4b5d1c9ae0bd0.jpg',
+      'https://i.pinimg.com/736x/2d/3e/a1/2d3ea1d0d754f7682d492a54f2f50531.jpg',
+      'https://i.pinimg.com/736x/ee/44/b9/ee44b9e37f5ddb9c097d777ee5f14e45.jpg',
+      'https://i.pinimg.com/1200x/67/11/fb/6711fba091577ed47ccefa55989e16b9.jpg',
+      'https://i.pinimg.com/1200x/6e/d4/f1/6ed4f1cd71a34cc7c9964ac0f6cd24ea.jpg',
+      'https://i.pinimg.com/1200x/5e/2b/f0/5e2bf098d9eca6e2b22a34e19fda4ae9.jpg'
+    ]
+  ],
+  // provisório: imagens de cowgirl-copper / ruivo-doce-leite
+  ['cobre-suave', 'coloracao', 'Cobre Suave', 'Ruivo Discreto e Sofisticado',
+    'Cobre de intensidade média, mais sutil que os ruivos vibrantes. Pigmentos vermelhos saem rápido, então lavagem morna e produtos para cor prolongam o resultado. Ex.: base 6.0/7.0 + tinta 7.4 (cobre) + gloss 7.43 (cobre dourado).',
+    'https://i.pinimg.com/736x/39/11/3b/39113b115f5d033e0bd7a1e57a5edb74.jpg',
+    [
+      'https://i.pinimg.com/1200x/7a/d4/f4/7ad4f49a2f9604293e2bc16d65a6d30f.jpg',
+      'https://i.pinimg.com/736x/9c/aa/f0/9caaf070bac7c0b853e549a47cc288b5.jpg',
+      'https://i.pinimg.com/736x/90/2f/8d/902f8dda8998aabe79bbb1efa6a96cfa.jpg',
+      'https://i.pinimg.com/1200x/96/d2/e0/96d2e00dd6756da11140d8eb10327ae5.jpg',
+      'https://i.pinimg.com/1200x/61/53/9d/61539dda3ba5eb0844362b440f7904e3.jpg',
+      'https://i.pinimg.com/736x/7f/2f/16/7f2f16fe8a47abab83bc2d05914a73d2.jpg',
+      'https://i.pinimg.com/1200x/3b/0e/82/3b0e827b274418c8d1013c497fa8db7a.jpg',
+      'https://i.pinimg.com/736x/01/f6/b8/01f6b8f1aa7b90c91f5262f11d01d552.jpg',
+      'https://i.pinimg.com/736x/c0/f0/cd/c0f0cd5ace640f47763a8f7712796ef1.jpg',
+      'https://i.pinimg.com/736x/8a/7c/d4/8a7cd4c0523d1384c8ac71d6b97b1541.jpg'
     ]
   ]
 ];
@@ -1422,7 +1551,7 @@ var ferramentasData = [
     ]
   ],
   [
-    'Kit de Escova de Cerdas Naturais',
+    'escova-cerdas-naturais',
     'ferramentas',
     'Escova de Cerdas Naturais',
     'Acabamento e Brilho',
