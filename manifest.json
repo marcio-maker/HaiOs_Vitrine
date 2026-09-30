@@ -53,6 +53,19 @@
           "type": "image/png"
         }
       ]
+    },
+    {
+      "name": "Diagnóstico",
+      "short_name": "Diagnóstico",
+      "description": "Análise capilar com foto + recomendações de kit",
+      "url": "./assistente.html#diagnostico",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
