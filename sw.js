@@ -1,10 +1,13 @@
-/* HairOS · Service Worker v7
+/* HairOS · Service Worker v8
    Correções aplicadas:
    - AbortController no timeout (evita requisições duplicadas)
    - icon-512.png fora do precache (evita 404 silencioso)
    - Cache-first para assets, network-first com timeout para HTML/data.js
+   v8:
+   - Timeout de 4s só vale se existir cópia em cache (1ª visita em rede lenta não quebra mais)
+   - HTML cacheado sem query string (?item=...&ref=...) → sem inchaço do cache
 */
-const CACHE_NAME = 'hairos-v7';
+const CACHE_NAME = 'hairos-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -67,16 +70,21 @@ self.addEventListener('fetch', (event) => {
                   url.pathname.endsWith('/data.js');
 
   if (ehHtml || ehDados) {
+    // HTML é guardado sem query string; data.js usa a própria requisição
+    const chave = ehHtml ? (url.origin + url.pathname) : req;
     event.respondWith(
-      fetchComTimeout(req, 4000)
-        .then((res) => guardar(req, res))
-        .catch(() =>
-          caches.match(req).then((r) => {
-            if (r) return r;
-            if (ehHtml) return caches.match('./index.html');
-            return new Response('', { status: 504, statusText: 'Offline' });
-          })
-        )
+      caches.match(chave).then((cached) => {
+        // Sem cópia local: espera a rede sem abortar. Com cópia: timeout de 4s e cai no cache.
+        const rede = cached ? fetchComTimeout(req, 4000) : fetch(req);
+        return rede
+          .then((res) => guardar(chave, res))
+          .catch(() => {
+            if (cached) return cached;
+            const offline = () => new Response('', { status: 504, statusText: 'Offline' });
+            if (ehHtml) return caches.match('./index.html').then((r) => r || offline());
+            return offline();
+          });
+      })
     );
     return;
   }
