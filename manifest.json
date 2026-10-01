@@ -1,0 +1,45 @@
+{
+  "id": "/HairOS-Inspira-o/",
+  "name": "HairOS · Vitrine de Inspirações Capilares",
+  "short_name": "HairOS",
+  "description": "Descubra estilos entre cortes, colorações, produtos e kits profissionais.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait",
+  "background_color": "#0a0808",
+  "theme_color": "#0a0808",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["lifestyle", "beauty", "shopping"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Assistente",
+      "short_name": "Assistente",
+      "description": "Consultoria capilar personalizada com quizzes e diagnóstico",
+      "url": "./assistente.html",
+      "icons": [
+        { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Diagnóstico",
+      "short_name": "Diagnóstico",
+      "description": "Análise capilar com foto + recomendações de kit",
+      "url": "./assistente.html#diagnostico",
+      "icons": [
+        { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+      ]
+    }
+  ]
+}
