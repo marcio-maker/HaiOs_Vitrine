@@ -1048,49 +1048,13 @@
         function getMlLink(item) {
             if (!item) return ML_SEARCH;
             if (item.link) return item.link;
-
-            var haystack = (
-                (item.corte || '') + ' ' +
-                (item.title || '') + ' ' +
-                (item.desc || '') + ' ' +
-                (item.id || '') + ' ' +
-                (item.categoria || '')
-            ).toLowerCase();
-
-            function matchKits(source) {
-                if (!source || !source.kits || !source.kits.length) return null;
-                for (var i = 0; i < source.kits.length; i++) {
-                    var kit = source.kits[i];
-                    if (!kit || !kit.link) continue;
-                    var nome = (kit.nome || '').toLowerCase().replace(/^kit\s+/, '');
-                    var tokens = nome.split(/\s+/).filter(function (t) { return t.length > 2; });
-                    for (var t = 0; t < tokens.length; t++) {
-                        var tok = tokens[t];
-                        var tokPlain = tok.normalize ? tok.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : tok;
-                        var hayPlain = haystack.normalize ? haystack.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : haystack;
-                        if (haystack.indexOf(tok) !== -1 || hayPlain.indexOf(tokPlain) !== -1) {
-                            return kit.link;
-                        }
-                    }
-                }
-                return null;
+            // Fonte única: getAffiliateLink() do data.js (mesma lógica da vitrine)
+            if (typeof getAffiliateLink === 'function') {
+                try {
+                    var link = getAffiliateLink(item);
+                    if (link) return link;
+                } catch (e) {}
             }
-
-            var link = null;
-            if (typeof cuidadosKits !== 'undefined') link = matchKits(cuidadosKits);
-            if (!link && typeof coloracaoKits !== 'undefined') link = matchKits(coloracaoKits);
-
-            if (!link) {
-                if (/kerastase|kérastase/.test(haystack)) link = 'https://meli.la/1MwSY7v';
-                else if (/joico/.test(haystack)) link = 'https://meli.la/2x9xqBe';
-                else if (/expert|l['']oréal|loreal|vitamino|absolut|metal.?detox/.test(haystack)) link = 'https://meli.la/2nmeunk';
-                else if (/keune/.test(haystack)) link = 'https://meli.la/1GbiW7M';
-                else if (/inoa|dia.?color|coloração técnica|coloracao tecnica/.test(haystack)) link = 'https://meli.la/28LpPj2';
-                else if (/ferramenta|secador|prancha|babyliss|escova|tesoura|navalha|máquina|maquina|difusor|pente|pincel|capa|massageador|luva|touca/.test(haystack)) link = 'https://meli.la/1GbiW7M';
-            }
-
-            if (link) return link;
-
             var q = getItemName(item) || item.title || '';
             return ML_SEARCH + encodeURIComponent(q);
         }
